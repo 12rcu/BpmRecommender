@@ -1,0 +1,9 @@
+token: 123abc
+databases:
+  main:
+    host: localhost
+    schema: api
+    user: root
+    password: 123abc
+auth:
+  googleSecret: 123abc

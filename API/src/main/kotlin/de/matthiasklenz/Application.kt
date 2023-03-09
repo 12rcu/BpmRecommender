@@ -1,10 +1,13 @@
 package de.matthiasklenz
 
+import de.matthiasklenz.config.ConfigLoader
+import de.matthiasklenz.plugins.*
 import io.ktor.server.application.*
+import io.ktor.server.config.*
 import io.ktor.server.engine.*
 import io.ktor.server.netty.*
-import de.matthiasklenz.plugins.*
-import io.ktor.server.config.*
+import org.koin.core.context.startKoin
+import org.slf4j.LoggerFactory
 
 fun main(args: Array<String>) {
     val applicationEnvironment = commandLineEnvironment(args)
@@ -15,10 +18,19 @@ fun main(args: Array<String>) {
 
 @Suppress("unused")     //set in application
 fun Application.module() {
-    configureSecurity()
-    configureHTTP()
-    configureSerialization()
-    configureRouting()
+    val config = ConfigLoader().loadConfig()
+    val logger = LoggerFactory.getLogger("api")
+
+    startKoin {
+        modules(
+            org.koin.dsl.module {
+                single { config }
+                single { logger }
+            }
+        )
+    }
+
+    Server(this)
 }
 
 private fun NettyApplicationEngine.Configuration.loadConfiguration(config: ApplicationConfig) {
