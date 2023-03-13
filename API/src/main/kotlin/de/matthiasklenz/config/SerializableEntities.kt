@@ -17,6 +17,7 @@ data class Databases (
 @Serializable
 data class SqlDatabase(
     val host: String,
+    val port: Int,
     val schema: String,
     val user: String,
     val password: String
