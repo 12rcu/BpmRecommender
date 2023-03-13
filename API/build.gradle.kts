@@ -8,6 +8,10 @@ plugins {
     id("org.jetbrains.kotlin.plugin.serialization") version "1.8.10"
 }
 
+kotlin {
+    jvmToolchain(17)
+}
+
 group = "de.matthiasklenz"
 version = "0.0.1"
 application {
