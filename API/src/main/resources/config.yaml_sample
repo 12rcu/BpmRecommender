@@ -2,8 +2,9 @@ token: 123abc
 databases:
   main:
     host: localhost
+    port: 3306
     schema: api
-    user: root
+    user: api
     password: 123abc
 auth:
   googleSecret: 123abc
