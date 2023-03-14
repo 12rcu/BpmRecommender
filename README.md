@@ -13,16 +13,22 @@ can be matched against.
 
 Tables:
 
-| User Item Assessment | Item A | Item B | Item C | Item D |
-|----------------------|--------|--------|--------|--------|
-| User A               | 1      | 5      | -      | 2      |
-| User B               | -      | 2      | 1      | 4      |
-| User C               | -      | -      | 3      | -      |
+| User Item Assessment | BPMN 2.0 | Declarative | eGantt | EPC | ... |
+|----------------------|----------|-------------|--------|-----|-----|
+| User A               | 1        | 5           | -      | 2   | ... |
+| User B               | -        | 2           | 1      | 4   | ... |
+| User C               | -        | -           | 3      | -   | ... |
+| ...                  | ...      | ...         | ...    | ... | ... |
 
-| Item Characteristics | A   | B   |
-|----------------------|-----|-----|
-| Item A               | 1   | 0   |
-| Item B               | 0   | 1   |
+| Item Characteristics | A   | B   | ... |
+|----------------------|-----|-----|-----|
+| BPMN 2.0             | 1   | 0   | ... |
+| Declarative          | 0   | 1   | ... |
+| Declarative          | 0   | 1   | ... |
+| ...                  | ... | ... | ... |
+
+To maintain Scalability, Columns will probably need separate Tables. This will be solved with the
+issue [#8](https://github.com/12rcu/BpmRecommender/issues/8).
 
 ## API
 
