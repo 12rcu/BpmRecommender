@@ -1,5 +1,7 @@
 # BpmRecommender
 
+[![GitHub license](https://badgen.net/github/license/12rcu/BpmRecommender)](https://github.com/12rcu/BpmRecommender/blob/master/LICENSE)
+
 (Entwicklung eines Recommender Systems für die Prozessevaluation/-modellierung)
 
 A Recommender System for Business Process Modeling Notations. Matches Notations characteristics against user preferences
