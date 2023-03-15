@@ -16,6 +16,8 @@ jobs:
           java-version: '17'
           distribution: 'adopt'
       - name: Build with Gradle
-        run: ./API/gradlew --warning-mode all build
+        working-directory: ./API/
+        run: ./gradlew --warning-mode all build
       - name: Run tests with Gradle
-        run: ./API/gradlew --warning-mode all test
+        working-directory: ./API/
+        run: ./gradlew --warning-mode all test
