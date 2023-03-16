@@ -15,11 +15,15 @@ jobs:
         with:
           java-version: '17'
           distribution: 'adopt'
-      - name: Check env
-        run: echo $BPM_CONFIG
       - name: Build with Gradle
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SECRET_NAME: ${{ secrets.BPM_CONFIG }}
         working-directory: ./API/
         run: ./gradlew --warning-mode all build
       - name: Run tests with Gradle
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SECRET_NAME: ${{ secrets.BPM_CONFIG }}
         working-directory: ./API/
         run: ./gradlew --warning-mode all test

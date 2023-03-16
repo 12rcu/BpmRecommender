@@ -19,7 +19,6 @@ class ConfigLoader {
     fun loadConfig(): Config = createYamlParser().decodeFromString(loadConfigStr())
 
     private fun loadConfigStr(): String {
-        println("BPM_CONFIG: ${System.getenv("BPM_CONFIG") != null}")
         return loadConfigFileFromResources()?.readText() ?: System.getenv("BPM_CONFIG")
         ?: throw Exception("No config provided!")
     }
