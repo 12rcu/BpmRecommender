@@ -24,6 +24,6 @@ jobs:
       - name: Run tests with Gradle
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          SECRET_NAME: ${{ secrets.BPM_CONFIG }}
+          BPM_CONFIG: ${{ secrets.BPM_CONFIG }}
         working-directory: ./API/
         run: ./gradlew --warning-mode all test
