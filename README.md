@@ -3,6 +3,7 @@
 [![GitHub license](https://badgen.net/github/license/12rcu/BpmRecommender)](https://github.com/12rcu/BpmRecommender/blob/master/LICENSE)
 [![Build](https://github.com/12rcu/BpmRecommender/actions/workflows/build.yml/badge.svg)](https://github.com/12rcu/BpmRecommender/actions/workflows/build.yml)
 
+[![Contributors over time](https://contributor-graph-api.apiseven.com/contributors-svg?chart=contributorOverTime&repo=12rcu/BpmRecommender)](https://www.apiseven.com/en/contributor-graph?chart=contributorOverTime&repo=12rcu/BpmRecommender)
 
 (Entwicklung eines Recommender Systems für die Prozessevaluation/-modellierung)
 
