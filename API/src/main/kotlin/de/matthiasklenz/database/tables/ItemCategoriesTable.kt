@@ -12,10 +12,12 @@ interface ItemCategoriesDBEntity: Entity<ItemCategoriesDBEntity> {
     val id: Int
     val name: String
     val description: String
+    val valueRange: Int
 }
 
 object ItemCategoriesDbTable: Table<ItemCategoriesDBEntity>("bpm_item_categories") {
     val id = int("id").primaryKey().bindTo { it.id }
     val name = varchar("name").bindTo { it.name }
     val description = text("description").bindTo { it.description }
+    val valueRange = int("value_range").bindTo { it.valueRange }
 }
