@@ -10,10 +10,12 @@ interface UserRecommendationDbEntity: Entity<UserRecommendationDbEntity> {
     val id: Int
     val userid: Int
     val itemId: Int
+    val rating: Int
 }
 
 object UserRecommendationsDbTable: Table<UserRecommendationDbEntity>("bpm_user_recommendation") {
     val id = int("id").primaryKey().bindTo { it.id }
     val userid = int("userid").bindTo { it.userid }
     val itemId = int("item_id").bindTo { it.itemId }
+    val rating = int("rating").bindTo { it.rating }
 }
