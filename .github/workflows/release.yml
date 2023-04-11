@@ -26,13 +26,12 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           BPM_CONFIG: ${{ secrets.BPM_CONFIG }}
-        working-directory: ./API/
         run: |
           ./gradlew --warning-mode all build --no-daemon
       - name: release
         uses: softprops/action-gh-release@v1
         id: create_release
         with:
-          files: "build/*-all.jar"
+          files: "API/build/*-all.jar"
         env:
           GITHUB_TOKEN: ${{ github.token }}
