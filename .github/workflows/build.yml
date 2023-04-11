@@ -19,11 +19,9 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           BPM_CONFIG: ${{ secrets.BPM_CONFIG }}
-        working-directory: ./API/
         run: ./gradlew --warning-mode all build
       - name: Run tests with Gradle
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           BPM_CONFIG: ${{ secrets.BPM_CONFIG }}
-        working-directory: ./API/
         run: ./gradlew --warning-mode all test

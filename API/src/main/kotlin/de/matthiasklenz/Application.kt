@@ -1,12 +1,14 @@
 package de.matthiasklenz
 
 import de.matthiasklenz.config.ConfigLoader
+import de.matthiasklenz.database.BpmDatabase
 import de.matthiasklenz.plugins.*
 import io.ktor.server.application.*
 import io.ktor.server.config.*
 import io.ktor.server.engine.*
 import io.ktor.server.netty.*
 import org.koin.core.context.startKoin
+import org.koin.core.qualifier.qualifier
 import org.slf4j.LoggerFactory
 
 fun main(args: Array<String>) {
@@ -25,7 +27,9 @@ fun Application.module() {
         modules(
             org.koin.dsl.module {
                 single { config }
+                single(qualifier("main")) { config.databases.main }
                 single { logger }
+                single { BpmDatabase() }
             }
         )
     }

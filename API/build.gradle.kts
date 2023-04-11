@@ -9,7 +9,7 @@ plugins {
 }
 
 kotlin {
-    jvmToolchain(17)
+    jvmToolchain(jdkVersion = 17)
 }
 
 group = "de.matthiasklenz"
