@@ -1,6 +1,13 @@
 package de.matthiasklenz.recommend.comparer
 
-interface Comparer {
+interface SimilarityMeasure {
+    enum class Type {
+        PEARSON,
+        EUKLID,
+        COSINE,
+        ADJUSTED_COSINE
+    }
+
     /**
      * compares 2 data maps and gives back a similarity measure, note: similarity measure can only be used with another
      * the same similarity measure.

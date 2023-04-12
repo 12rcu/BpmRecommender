@@ -3,7 +3,7 @@ package de.matthiasklenz.recommend.comparer
 import kotlin.math.pow
 import kotlin.math.sqrt
 
-class Cosine : Comparer {
+class Cosine : SimilarityMeasure {
     companion object {
         fun basicCalc(
             dataA: Map<String, Number>,

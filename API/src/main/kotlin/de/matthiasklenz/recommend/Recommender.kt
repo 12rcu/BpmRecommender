@@ -1,65 +1,46 @@
 package de.matthiasklenz.recommend
 
-import de.matthiasklenz.recommend.comparer.Cosine
-import de.matthiasklenz.recommend.comparer.Euklid
-import de.matthiasklenz.recommend.comparer.Pearson
-import org.slf4j.LoggerFactory
+import de.matthiasklenz.recommend.comparer.SimilarityMeasure
 
-
-class Recommender {
-    private val logger = LoggerFactory.getLogger("api")
-
-    enum class ComparingType {
-        PEARSON,
-        EUKLID,
-        COSINE,
-        ADJUSTED_COSINE
-    }
-
+interface Recommender {
     data class UserSimilarity(
         val userid: Int,
         val similarity: Double
     )
 
-    fun calculateAllSimilaritiesUser(
+    /**
+     * @param userid the userid that has rated items
+     * @param ratings the ratings (item to rating), if a user hasn't rated an item it shouldn't be in the map
+     */
+    data class UserRatings(
+        val userid: Int,
+        val ratings: Map<String, Int>
+    )
+
+    /**
+     * @param userid the user for whom an item should be recommended
+     * @param similarityMeasure the algorithm which the recommendation should use
+     * @param allItems all possible items, user don't need to rate all items
+     * @param ratings a list of all ratings from all users, if users haven't rated an item it shouldn't be in the map
+     * @return all items with the estimated rating the user would give
+     */
+    fun recommendUserBasedItemFor(
         userid: Int,
-        data: Map<Int, Map<String, Int>>,
+        similarityMeasure: SimilarityMeasure.Type,
         allItems: List<String>,
-        comparison: ComparingType = ComparingType.PEARSON
-    ): MutableList<UserSimilarity> {
-        val userSimData = mutableListOf<UserSimilarity>()
-        if (!data.containsKey(userid)) {
-            logger.error("User $userid is not within the list provided!")
-            return userSimData
-        }
-        data.forEach { (compareUserid, compareData) ->
-            if (userid == compareUserid)
-                return@forEach
-            when (comparison) {
-                ComparingType.COSINE -> userSimData.add(
-                    UserSimilarity(
-                        compareUserid,
-                        Cosine().compare(data[userid]!!, compareData, allItems).toDouble()
-                    )
-                )
+        ratings: List<UserRatings>
+    ): Map<String, Double>
 
-                ComparingType.EUKLID -> userSimData.add(
-                    UserSimilarity(
-                        compareUserid,
-                        Euklid().compare(data[userid]!!, compareData, allItems).toDouble()
-                    )
-                )
-
-                ComparingType.PEARSON -> userSimData.add(
-                    UserSimilarity(
-                        compareUserid,
-                        Pearson().compare(data[userid]!!, compareData, allItems).toDouble()
-                    )
-                )
-
-                ComparingType.ADJUSTED_COSINE -> TODO()
-            }
-        }
-        return userSimData
-    }
+    /**
+     * @param userid the user for whom an item should be recommended
+     * @param similarityMeasure the algorithm which the recommendation should use
+     * @param allItems all possible items, user don't need to rate all items
+     * @param ratings a list of all ratings from all users, if users haven't rated an item it shouldn't be in the map
+     */
+    fun getSimilaritiesOf(
+        userid: Int,
+        similarityMeasure: SimilarityMeasure.Type,
+        allItems: List<String>,
+        ratings: List<UserRatings>
+    ): List<UserSimilarity>
 }

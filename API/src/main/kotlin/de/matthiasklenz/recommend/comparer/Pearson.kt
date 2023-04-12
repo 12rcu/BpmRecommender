@@ -2,7 +2,7 @@ package de.matthiasklenz.recommend.comparer
 
 import de.matthiasklenz.recommend.comparer.shared.CorrelationCoefficient
 
-class Pearson: Comparer {
+class Pearson: SimilarityMeasure {
     override fun compare(
         dataA: Map<String, Int>,
         dataB: Map<String, Int>,
