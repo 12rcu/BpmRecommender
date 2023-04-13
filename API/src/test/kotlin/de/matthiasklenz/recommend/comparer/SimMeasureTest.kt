@@ -1,29 +1,13 @@
 package de.matthiasklenz.recommend.comparer
 
+import de.matthiasklenz.recommend.RecommenderTest
 import kotlin.test.*
 
 class SimMeasureTest {
     companion object Data {
-        val items = listOf(
-            "Cafe Rot",
-            "Pizza Pronto",
-            "Pasta und Pizza",
-            "Earl of Sandwiches",
-            "Grecos"
-        )
-        val userA = mapOf(
-            "Cafe Rot" to 1,
-            "Pizza Pronto" to 5,
-            "Earl of Sandwiches" to 3,
-        )
-
-        val userB = mapOf(
-            "Cafe Rot" to 1,
-            "Pizza Pronto" to 5,
-            "Pasta und Pizza" to 3,
-            "Earl of Sandwiches" to 4,
-            "Grecos" to 2
-        )
+        val items = RecommenderTest.items
+        val userA = RecommenderTest.userRatings[1].ratings
+        val userB = RecommenderTest.userRatings[3].ratings
     }
 
     @Test

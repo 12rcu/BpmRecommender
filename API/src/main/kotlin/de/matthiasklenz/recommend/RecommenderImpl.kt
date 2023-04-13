@@ -18,7 +18,7 @@ class RecommenderImpl : KoinComponent, Recommender {
         userid: Int,
         similarityMeasure: SimilarityMeasure.Type,
         allItems: List<String>,
-        ratings: List<Recommender.UserRatings>,
+        ratings: List<Recommender.UserRating>,
         knn: Int,
         weightedMean: Boolean
     ): Map<String, Double> {
@@ -48,7 +48,7 @@ class RecommenderImpl : KoinComponent, Recommender {
         userid: Int,
         similarityMeasure: SimilarityMeasure.Type,
         allItems: List<String>,
-        ratings: List<Recommender.UserRatings>
+        ratings: List<Recommender.UserRating>
     ): List<Recommender.UserSimilarity> {
         if (ratings.find { it.userid == userid } == null) {
             logger.error("User $userid is not within the list provided! Returning empty list!")

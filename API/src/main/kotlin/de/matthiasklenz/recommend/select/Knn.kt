@@ -11,6 +11,6 @@ object Knn {
      * @return the k nearest neighbours
      */
     fun calculate(neighbors: List<Recommender.UserSimilarity>, k: Int): List<Recommender.UserSimilarity> {
-        return neighbors.sortedBy { it.similarity }.take(k)
+        return neighbors.sortedBy { it.similarity }.takeLast(k)
     }
 }

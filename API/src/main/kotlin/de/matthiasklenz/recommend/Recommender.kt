@@ -13,7 +13,7 @@ interface Recommender {
      * @param userid the userid that has rated items
      * @param ratings the ratings (item to rating), if a user hasn't rated an item it shouldn't be in the map
      */
-    data class UserRatings(
+    data class UserRating(
         val userid: Int,
         val ratings: Map<String, Int>
     )
@@ -31,7 +31,7 @@ interface Recommender {
         userid: Int,
         similarityMeasure: SimilarityMeasure.Type,
         allItems: List<String>,
-        ratings: List<UserRatings>,
+        ratings: List<UserRating>,
         knn: Int = 2,
         weightedMean: Boolean = true
     ): Map<String, Double>
@@ -46,6 +46,6 @@ interface Recommender {
         userid: Int,
         similarityMeasure: SimilarityMeasure.Type,
         allItems: List<String>,
-        ratings: List<UserRatings>
+        ratings: List<UserRating>
     ): List<UserSimilarity>
 }
