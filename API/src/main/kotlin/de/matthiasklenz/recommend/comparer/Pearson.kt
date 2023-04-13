@@ -12,8 +12,8 @@ class Pearson: SimilarityMeasure {
         val correlationCoefficientB = CorrelationCoefficient.calculate(dataB.map { it.value })
 
         return Cosine.basicCalc(
-            dataA.map { (key, value) -> key to value / correlationCoefficientA }.toMap(),
-            dataB.map { (key, value) -> key to value / correlationCoefficientB }.toMap(),
+            dataA.map { (key, value) -> key to value - correlationCoefficientA }.toMap(),
+            dataB.map { (key, value) -> key to value - correlationCoefficientB }.toMap(),
             allItems
         )
     }

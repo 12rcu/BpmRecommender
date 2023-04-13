@@ -20,7 +20,7 @@ class Cosine : SimilarityMeasure {
                 sumBSquared += (dataB[it] ?: 0).toDouble().pow(2)
             }
 
-            return ((sumATimesB / (sqrt(sumASquared * sumBSquared))) + 1) / 2   //normalize (no negative data)
+            return (sumATimesB / (sqrt(sumASquared * sumBSquared)))
         }
     }
 
