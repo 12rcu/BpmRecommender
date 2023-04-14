@@ -13,18 +13,18 @@ class SimMeasureTest {
     @Test
     fun testEuklid() {
         val sim = Euklid().compare(userA, userB, items)
-        assertEquals(sim.toDouble(), 0.21, 0.1)
+        assertEquals(0.21, sim.toDouble(), 0.1)
     }
 
     @Test
     fun testCousin() {
         val sim = Cosine().compare(userA, userB, items)
-        assertEquals(sim.toDouble(), 0.87, 0.1)
+        assertEquals(0.87, sim.toDouble(), 0.1)
     }
 
     @Test
     fun testPearson() {
         val sim = Pearson().compare(userA, userB, items)
-        assertEquals(sim.toDouble(), 0.89, 0.1)
+        assertEquals(0.89, sim.toDouble(), 0.1)
     }
 }
