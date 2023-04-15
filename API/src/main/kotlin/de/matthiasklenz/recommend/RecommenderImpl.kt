@@ -27,7 +27,7 @@ class RecommenderImpl : KoinComponent, Recommender {
             return mapOf()
         }
         val returnRecommendations = mutableMapOf<String, Double>()
-        val similarities = getSimilaritiesOf(userid, similarityMeasure, allItems, ratings)
+        val similarities = getUserSimilaritiesOf(userid, similarityMeasure, allItems, ratings)
         //select items that are not rated
         val ratedItems = ratings.find { it.userid == userid }!!.ratings
         val unratedItems = allItems.filterNot { ratedItems.containsKey(it) }
@@ -36,7 +36,7 @@ class RecommenderImpl : KoinComponent, Recommender {
             //select only the neighbors that have rated the item
             val neighbors = similarities.filter { it.userid != userid && it.ratings.containsKey(item) }
             val nearestNeighbors = Knn.calculate(neighbors, knn)
-            if(weightedMean)
+            if (weightedMean)
                 returnRecommendations[item] = Mean.weightedMean(nearestNeighbors, item)
             else
                 returnRecommendations[item] = Mean.mean(nearestNeighbors, item)
@@ -44,7 +44,7 @@ class RecommenderImpl : KoinComponent, Recommender {
         return returnRecommendations
     }
 
-    override fun getSimilaritiesOf(
+    override fun getUserSimilaritiesOf(
         userid: Int,
         similarityMeasure: SimilarityMeasure.Type,
         allItems: List<String>,
@@ -80,5 +80,49 @@ class RecommenderImpl : KoinComponent, Recommender {
                 SimilarityMeasure.Type.ADJUSTED_COSINE -> TODO()
             }
         }
+    }
+
+    override fun getItemSimilaritiesOf(
+        item: String,
+        similarityMeasure: SimilarityMeasure.Type,
+        allItems: List<String>,
+        ratings: List<Recommender.UserRating>
+    ): List<Recommender.ItemSimilarity> {
+        if (!allItems.contains(item)) {
+            logger.error("Item $item is not within the list provided! Returning empty list!")
+            return listOf()
+        }
+
+        val dataA = ratings
+            .filter { it.ratings.containsKey(item) }
+            .associate { it.userid.toString() to it.ratings[item]!! }
+
+        return allItems
+            .filter { it != item }
+            .map {
+                val dataB = ratings
+                    .filter { rt -> rt.ratings.containsKey(it) }
+                    .associate { rt -> rt.userid.toString() to rt.ratings[it]!! }
+
+                when (similarityMeasure) {
+                    SimilarityMeasure.Type.COSINE -> Recommender.ItemSimilarity(
+                        it,  //similarity to that user
+                        Cosine().compare(dataA, dataB, ratings.map { rating -> rating.userid.toString() })
+                            .toDouble() //how similar as a double
+                    )
+
+                    SimilarityMeasure.Type.EUKLID -> Recommender.ItemSimilarity(
+                        it,
+                        Euklid().compare(dataA, dataB, ratings.map { rating -> rating.userid.toString() }).toDouble()
+                    )
+
+                    SimilarityMeasure.Type.PEARSON -> Recommender.ItemSimilarity(
+                        it,
+                        Pearson().compare(dataA, dataB, ratings.map { rating -> rating.userid.toString() }).toDouble()
+                    )
+
+                    SimilarityMeasure.Type.ADJUSTED_COSINE -> TODO()
+                }
+            }
     }
 }

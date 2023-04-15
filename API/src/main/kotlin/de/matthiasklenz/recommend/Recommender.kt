@@ -9,6 +9,11 @@ interface Recommender {
         val similarity: Double
     )
 
+    data class ItemSimilarity(
+        val item: String,
+        val similarity: Double
+    )
+
     /**
      * @param userid the userid that has rated items
      * @param ratings the ratings (item to rating), if a user hasn't rated an item it shouldn't be in the map
@@ -42,10 +47,23 @@ interface Recommender {
      * @param allItems all possible items, user don't need to rate all items
      * @param ratings a list of all ratings from all users, if users haven't rated an item it shouldn't be in the map
      */
-    fun getSimilaritiesOf(
+    fun getUserSimilaritiesOf(
         userid: Int,
         similarityMeasure: SimilarityMeasure.Type,
         allItems: List<String>,
         ratings: List<UserRating>
     ): List<UserSimilarity>
+
+    /**
+     * @param item the item for which a similar item is searched
+     * @param similarityMeasure the algorithm which the recommendation should use
+     * @param allItems all possible items, users don't need to rate all items
+     * @param ratings a list of all ratings from all users, if users haven't rated an item it shouldn't be in the map
+     */
+    fun getItemSimilaritiesOf(
+        item: String,
+        similarityMeasure: SimilarityMeasure.Type,
+        allItems: List<String>,
+        ratings: List<UserRating>
+    ): List<ItemSimilarity>
 }

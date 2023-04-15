@@ -5,7 +5,7 @@ import org.koin.test.KoinTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
-class RecommenderTest: KoinTest {
+class RecommenderTest : KoinTest {
     val recommender: Recommender = RecommenderImpl()
 
     companion object {
@@ -71,7 +71,7 @@ class RecommenderTest: KoinTest {
 
     @Test
     fun basicSimilaritiesEuklid() {
-        val sim = recommender.getSimilaritiesOf(2, SimilarityMeasure.Type.EUKLID, items, userRatings)
+        val sim = recommender.getUserSimilaritiesOf(2, SimilarityMeasure.Type.EUKLID, items, userRatings)
         assertEquals(4, sim.size)
 
         assertEquals(0.12, sim[0].similarity, 0.05)
@@ -122,7 +122,17 @@ class RecommenderTest: KoinTest {
 
     @Test
     fun assertFailOnMissingUserid2() {
-        val sim = recommender.getSimilaritiesOf(6, SimilarityMeasure.Type.EUKLID, items, userRatings)
+        val sim = recommender.getUserSimilaritiesOf(6, SimilarityMeasure.Type.EUKLID, items, userRatings)
         assertEquals(0, sim.size)
+    }
+
+    @Test
+    fun testItemSimilarities() {
+        val sim =
+            recommender.getItemSimilaritiesOf("Earl of Sandwiches", SimilarityMeasure.Type.EUKLID, items, userRatings)
+        assertEquals(0.2, sim[0].similarity, 0.05)
+        assertEquals(0.18, sim[1].similarity, 0.05)
+        assertEquals(0.16, sim[2].similarity, 0.05)
+        assertEquals(0.15, sim[3].similarity, 0.05)
     }
 }
