@@ -55,4 +55,5 @@ dependencies {
     // config
     implementation("com.charleskorn.kaml:kaml:0.49.0")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.4.1")
+    testImplementation("org.junit.jupiter:junit-jupiter:5.8.1")
 }
