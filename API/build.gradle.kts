@@ -26,18 +26,17 @@ repositories {
 }
 
 dependencies {
-    implementation("io.ktor:ktor-server-core-jvm:$ktor_version")
-    implementation("io.ktor:ktor-server-auth-jvm:$ktor_version")
-    implementation("io.ktor:ktor-server-auth-jwt-jvm:$ktor_version")
-    implementation("io.ktor:ktor-client-core-jvm:$ktor_version")
-    implementation("io.ktor:ktor-client-apache-jvm:$ktor_version")
-    implementation("io.ktor:ktor-server-host-common-jvm:$ktor_version")
-    implementation("io.ktor:ktor-server-cors-jvm:$ktor_version")
-    implementation("io.ktor:ktor-server-content-negotiation-jvm:$ktor_version")
-    implementation("io.ktor:ktor-serialization-kotlinx-json-jvm:$ktor_version")
-    implementation("io.ktor:ktor-server-netty-jvm:$ktor_version")
     implementation("ch.qos.logback:logback-classic:$logback_version")
-    testImplementation("io.ktor:ktor-server-tests-jvm:$ktor_version")
+    implementation("io.ktor:ktor-server-core-jvm:2.3.0")
+    implementation("io.ktor:ktor-server-auth-jvm:2.3.0")
+    implementation("io.ktor:ktor-server-auth-jwt-jvm:2.3.0")
+    implementation("io.ktor:ktor-client-core-jvm:2.3.0")
+    implementation("io.ktor:ktor-client-apache-jvm:2.3.0")
+    implementation("io.ktor:ktor-server-host-common-jvm:2.3.0")
+    implementation("io.ktor:ktor-server-cors-jvm:2.3.0")
+    implementation("io.ktor:ktor-server-content-negotiation-jvm:2.3.0")
+    implementation("io.ktor:ktor-serialization-kotlinx-json-jvm:2.3.0")
+    implementation("io.ktor:ktor-server-netty-jvm:2.3.0")
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit:$kotlin_version")
 
     // database
@@ -56,4 +55,5 @@ dependencies {
     implementation("com.charleskorn.kaml:kaml:0.49.0")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.4.1")
     testImplementation("org.junit.jupiter:junit-jupiter:5.8.1")
+    testImplementation("io.ktor:ktor-server-tests-jvm:2.3.0")
 }

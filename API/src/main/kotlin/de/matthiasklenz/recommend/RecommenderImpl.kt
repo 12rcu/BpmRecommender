@@ -1,8 +1,5 @@
 package de.matthiasklenz.recommend
 
-import de.matthiasklenz.recommend.comparer.Cosine
-import de.matthiasklenz.recommend.comparer.Euklid
-import de.matthiasklenz.recommend.comparer.Pearson
 import de.matthiasklenz.recommend.comparer.SimilarityMeasure
 import de.matthiasklenz.recommend.select.Knn
 import de.matthiasklenz.recommend.select.Mean
@@ -16,7 +13,7 @@ class RecommenderImpl : KoinComponent, Recommender {
 
     override fun recommendUserBasedItemFor(
         userid: Int,
-        similarityMeasure: SimilarityMeasure.Type,
+        similarityMeasure: SimilarityMeasure,
         allItems: List<String>,
         ratings: List<Recommender.UserRating>,
         knn: Int,
@@ -46,7 +43,7 @@ class RecommenderImpl : KoinComponent, Recommender {
 
     override fun getUserSimilaritiesOf(
         userid: Int,
-        similarityMeasure: SimilarityMeasure.Type,
+        similarityMeasure: SimilarityMeasure,
         allItems: List<String>,
         ratings: List<Recommender.UserRating>
     ): List<Recommender.UserSimilarity> {
@@ -57,34 +54,18 @@ class RecommenderImpl : KoinComponent, Recommender {
         val targetUserRatings = ratings.find { it.userid == userid }!!
 
         return ratings.filter { it.userid != userid }.map {
-            when (similarityMeasure) {
-                SimilarityMeasure.Type.COSINE -> Recommender.UserSimilarity(
-                    it.userid,  //similarity to that user
-                    it.ratings,
-                    Cosine().compare(targetUserRatings.ratings, it.ratings, allItems)
-                        .toDouble() //how similar as a double
-                )
-
-                SimilarityMeasure.Type.EUKLID -> Recommender.UserSimilarity(
-                    it.userid,
-                    it.ratings,
-                    Euklid().compare(targetUserRatings.ratings, it.ratings, allItems).toDouble()
-                )
-
-                SimilarityMeasure.Type.PEARSON -> Recommender.UserSimilarity(
-                    it.userid,
-                    it.ratings,
-                    Pearson().compare(targetUserRatings.ratings, it.ratings, allItems).toDouble()
-                )
-
-                SimilarityMeasure.Type.ADJUSTED_COSINE -> TODO()
-            }
+            Recommender.UserSimilarity(
+                it.userid,  //similarity to that user
+                it.ratings,
+                similarityMeasure.compare(targetUserRatings.ratings, it.ratings, allItems)
+                    .toDouble() //how similar as a double
+            )
         }
     }
 
     override fun getItemSimilaritiesOf(
         item: String,
-        similarityMeasure: SimilarityMeasure.Type,
+        similarityMeasure: SimilarityMeasure,
         allItems: List<String>,
         ratings: List<Recommender.UserRating>
     ): List<Recommender.ItemSimilarity> {
@@ -103,26 +84,11 @@ class RecommenderImpl : KoinComponent, Recommender {
                 val dataB = ratings
                     .filter { rt -> rt.ratings.containsKey(it) }
                     .associate { rt -> rt.userid.toString() to rt.ratings[it]!! }
-
-                when (similarityMeasure) {
-                    SimilarityMeasure.Type.COSINE -> Recommender.ItemSimilarity(
-                        it,  //similarity to that user
-                        Cosine().compare(dataA, dataB, ratings.map { rating -> rating.userid.toString() })
-                            .toDouble() //how similar as a double
-                    )
-
-                    SimilarityMeasure.Type.EUKLID -> Recommender.ItemSimilarity(
-                        it,
-                        Euklid().compare(dataA, dataB, ratings.map { rating -> rating.userid.toString() }).toDouble()
-                    )
-
-                    SimilarityMeasure.Type.PEARSON -> Recommender.ItemSimilarity(
-                        it,
-                        Pearson().compare(dataA, dataB, ratings.map { rating -> rating.userid.toString() }).toDouble()
-                    )
-
-                    SimilarityMeasure.Type.ADJUSTED_COSINE -> TODO()
-                }
+                Recommender.ItemSimilarity(
+                    it,  //similarity to that user
+                    similarityMeasure.compare(dataA, dataB, ratings.map { rating -> rating.userid.toString() })
+                        .toDouble() //how similar as a double
+                )
             }
     }
 }
