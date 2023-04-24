@@ -16,6 +16,8 @@ import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 import org.koin.core.module.Module
 import org.ktorm.entity.map
+import org.slf4j.Logger
+import java.lang.NumberFormatException
 
 class RecommenderRoutes(application: Application) : KoinComponent {
     companion object {
@@ -35,6 +37,8 @@ class RecommenderRoutes(application: Application) : KoinComponent {
     private val userDao: UserDao by inject()
     private val itemDao: ItemDao by inject()
     private val recommender: Recommender by inject()
+
+    private val logger: Logger by inject()
 
     init {
         with(application) {
@@ -63,6 +67,35 @@ class RecommenderRoutes(application: Application) : KoinComponent {
         }
         get("/userBased/recommendations/{userid}") {
             val userid: Int = call.parameters["userid"]?.toInt() ?: 0
+            val similarityMeasure: SimilarityMeasure = when (call.request.queryParameters["SimilarityMeasure"] ?: "") {
+                "euklid" -> euklid
+                "cosine" -> cosine
+                else -> pearson
+            }
+            val knn: Int = try {
+                call.request.queryParameters["knn"]?.toInt() ?: 2
+            } catch (e: NumberFormatException) {
+                logger.warn(
+                    "NumberFormatException while calling userBased/recommendations, " +
+                            "parameters: ${call.request.queryParameters}, while knn should be a number"
+                )
+                2
+            }
+            val weightedMean = call.request.queryParameters["weightedMean"]?.toBoolean() ?: true
+
+            val allRatings = userDao.getAllRatingsRecommender()
+            val allItems = itemDao.getItems().map { it.name }
+            val recommendations =
+                recommender.recommendUserBasedItemFor(
+                    userid,
+                    similarityMeasure,
+                    allItems,
+                    allRatings,
+                    knn,
+                    weightedMean
+                )
+
+            call.respond(recommendations)
         }
     }
 }
