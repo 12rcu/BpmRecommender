@@ -1,5 +1,6 @@
 package de.matthiasklenz.routing
 
+import de.matthiasklenz.database.BpmDatabase
 import de.matthiasklenz.database.dao.ItemDao
 import io.ktor.http.*
 import io.ktor.server.application.*
@@ -13,7 +14,7 @@ import org.ktorm.dsl.limit
 import org.ktorm.entity.map
 
 class ItemRoutes(application: Application) : KoinComponent {
-    private val dao: ItemDao by inject()
+    private val database: BpmDatabase by inject()
 
     init {
         with(application) {
@@ -33,15 +34,15 @@ class ItemRoutes(application: Application) : KoinComponent {
             }
             get {
                 if (call.parameters["id"] == null) {
-                    call.respond(dao.getItems().map { SerializedItem(it.id, it.name, it.description) })
+                    call.respond(database.itemDao.getItems().map { SerializedItem(it.id, it.name, it.description) })
                 } else if (call.parameters["id"]?.toIntOrNull() != null) {
-                    val query = dao.getItem(call.parameters["id"]!!.toInt())
+                    val query = database.itemDao.getItem(call.parameters["id"]!!.toInt())
                     if (query.totalRecords <= 0)
                         call.respond(HttpStatusCode.NotFound, "The item ${call.parameters["id"]} could not be found!")
                     else
                         call.respond(HttpStatusCode.NotFound, "The item ${call.parameters["id"]} could not be found!")
                 } else {
-                    call.respond(dao.getItem(call.parameters["id"]!!))
+                    call.respond(database.itemDao.getItem(call.parameters["id"]!!))
                 }
             }
         }

@@ -1,81 +1,40 @@
 package de.matthiasklenz.plugins
 
-import io.ktor.server.auth.*
-import io.ktor.server.response.*
-import io.ktor.server.auth.jwt.*
-import com.auth0.jwt.JWT
-import com.auth0.jwt.algorithms.Algorithm
-import io.ktor.client.*
-import io.ktor.client.engine.apache.*
+import de.matthiasklenz.config.ConfigLoader
 import io.ktor.http.*
-import io.ktor.server.sessions.*
 import io.ktor.server.application.*
-import io.ktor.server.routing.*
+import io.ktor.server.auth.*
+import io.ktor.server.auth.jwt.*
+import io.ktor.server.response.*
+import io.ktor.util.pipeline.*
+import org.slf4j.Logger
 
-fun Application.configureSecurity() {
-
+fun Application.configureSecurity(jwtConfig: JwtConfig) {
     authentication {
-        basic(name = "myauth1") {
-            realm = "Ktor Server"
-            validate { credentials ->
-                if (credentials.name == credentials.password) {
-                    UserIdPrincipal(credentials.name)
-                } else {
-                    null
-                }
-            }
-        }
-
-        form(name = "myauth2") {
-            userParamName = "user"
-            passwordParamName = "password"
-            challenge {
-                /**/
-            }
-        }
-    }
-    authentication {
-        oauth("auth-oauth-google") {
-            urlProvider = { "http://localhost:8080/callback" }
-            providerLookup = {
-                OAuthServerSettings.OAuth2ServerSettings(
-                    name = "google",
-                    authorizeUrl = "https://accounts.google.com/o/oauth2/auth",
-                    accessTokenUrl = "https://accounts.google.com/o/oauth2/token",
-                    requestMethod = HttpMethod.Post,
-                    clientId = System.getenv("GOOGLE_CLIENT_ID"),
-                    clientSecret = System.getenv("GOOGLE_CLIENT_SECRET"),
-                    defaultScopes = listOf("https://www.googleapis.com/auth/userinfo.profile")
-                )
-            }
-            client = HttpClient(Apache)
-        }
-    }
-    routing {
-        authenticate("myauth1") {
-            get("/protected/route/basic") {
-                val principal = call.principal<UserIdPrincipal>()!!
-                call.respondText("Hello ${principal.name}")
-            }
-        }
-        authenticate("myauth2") {
-            get("/protected/route/form") {
-                val principal = call.principal<UserIdPrincipal>()!!
-                call.respondText("Hello ${principal.name}")
-            }
-        }
-        authenticate("auth-oauth-google") {
-            get("login") {
-                call.respondRedirect("/callback")
-            }
-
-            get("/callback") {
-                val principal: OAuthAccessTokenResponse.OAuth2? = call.authentication.principal()
-                call.sessions.set(UserSession(principal?.accessToken.toString()))
-                call.respondRedirect("/hello")
-            }
+        jwt {
+            jwtConfig.configureKtorFeature(this)
         }
     }
 }
 
-class UserSession(accessToken: String)
+suspend fun PipelineContext<Unit, ApplicationCall>.bpmnAuth(routeInfo: String, logger: Logger): Boolean {
+    val principal = call.principal<JwtConfig.User>()
+    return if(principal?.role == "admin") {
+        logger.info("Successfully authenticated '${principal.userinfo}' to access '$routeInfo'!")
+        true
+    } else {
+        if(principal == null) {
+            call.respond(HttpStatusCode.Unauthorized, "Please reauthenticate!")
+        } else {
+            call.respond(HttpStatusCode.Forbidden, "You don't have the correct role to access this Route!")
+        }
+        logger.warn("Denied access for '$principal' to access '$routeInfo'!")
+        false
+    }
+}
+
+fun main() {
+    val config = ConfigLoader().loadConfig()
+    val token = JwtConfig(config.token).generateToken(JwtConfig.User("matthias", "admin"))
+    println(token)
+}
