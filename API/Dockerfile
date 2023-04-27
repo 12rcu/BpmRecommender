@@ -3,7 +3,7 @@ FROM openjdk:17 as Builder
 # Add backend sources
 WORKDIR /src
 RUN mkdir api
-ADD API /src/api
+ADD . /src/api
 ADD ../deploy/start.sh /src/api/run/start.sh
 
 # Build jar
