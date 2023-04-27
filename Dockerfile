@@ -1,4 +1,4 @@
-FROM openjdk:17 as Builder
+FROM gradle:7.6.1-jdk17 as Builder
 
 # Add backend sources
 WORKDIR /src
