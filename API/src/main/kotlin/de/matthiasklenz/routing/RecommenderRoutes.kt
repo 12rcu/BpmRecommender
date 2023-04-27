@@ -51,7 +51,7 @@ class RecommenderRoutes(application: Application) : KoinComponent {
         }
     }
 
-    fun Route.userBasedFiltering() {
+    private fun Route.userBasedFiltering() {
         get("/userBased/similarities/{userid}") {
             if(!bpmnAuth("/userBased/similarities", logger))
                 return@get

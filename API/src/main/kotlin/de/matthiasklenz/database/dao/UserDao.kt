@@ -1,9 +1,6 @@
 package de.matthiasklenz.database.dao
 
-import de.matthiasklenz.database.tables.UserDbTable
-import de.matthiasklenz.database.tables.UserRatingDbEntity
-import de.matthiasklenz.database.tables.UserRatingDbTable
-import de.matthiasklenz.database.tables.UserType
+import de.matthiasklenz.database.tables.*
 import de.matthiasklenz.recommend.Recommender
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
@@ -65,6 +62,10 @@ class UserDao(private val database: Database): KoinComponent {
                 itemName to it.rating
             }
         )
+    }
+
+    fun getAllUsers(): EntitySequence<UserDbEntity, UserDbTable> {
+        return database.sequenceOf(UserDbTable)
     }
 
     fun getAllRatingsRecommender(): List<Recommender.UserRating> = database.sequenceOf(UserDbTable).map { user ->

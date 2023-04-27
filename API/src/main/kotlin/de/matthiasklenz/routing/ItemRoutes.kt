@@ -16,11 +16,28 @@ import org.ktorm.entity.map
 class ItemRoutes(application: Application) : KoinComponent {
     private val database: BpmDatabase by inject()
 
+    @Serializable
+    data class Item(
+        val name: String,
+        val description: String,
+        val id: Int
+    )
+
     init {
         with(application) {
             routing {
-
+                allItems()
+                createItem()
             }
+        }
+    }
+
+    private fun Routing.allItems() {
+        get("/items") {
+            val data = database.itemDao.getItems().map {
+                Item(it.name, it.description, it.id)
+            }
+            call.respond(data)
         }
     }
 
