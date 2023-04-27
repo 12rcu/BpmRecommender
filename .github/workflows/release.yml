@@ -9,6 +9,7 @@ env:
   DOCKER_IMAGE_NAME: bpmn_recommender
   DOCKERFILE_PATH: .
   DOCKER_TAG: ${{ github.ref }}
+  BPM_CONFIG: ${{ secrets.BPM_CONFIG }}
 
 jobs:
   build-and-push-image:
