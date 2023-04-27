@@ -6,7 +6,7 @@ on:
       - '*'
 
 env:
-  DOCKER_IMAGE_NAME: bpmn-recommender
+  DOCKER_IMAGE_NAME: bpmn_recommender
   DOCKERFILE_PATH: ./deploy
   DOCKER_TAG: ${{ github.ref }}
 
@@ -26,4 +26,4 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Build Docker image
-        run: docker build -t $DOCKER_IMAGE_NAME:$DOCKER_TAG $DOCKERFILE_PATH
+        run: docker build -t $DOCKER_IMAGE_NAME:latest $DOCKERFILE_PATH
