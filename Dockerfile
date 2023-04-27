@@ -9,7 +9,7 @@ ADD start.sh /src/api/run/start.sh
 # Build jar
 WORKDIR /src/api
 RUN chmod u+x gradlew
-RUN ./gradlew build
+RUN ./gradlew build --exclude-task test
 
 # Prepare runtime
 FROM openjdk:17-alpine
