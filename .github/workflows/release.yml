@@ -7,7 +7,7 @@ on:
 
 env:
   DOCKER_IMAGE_NAME: bpmn_recommender
-  DOCKERFILE_PATH: .
+  DOCKERFILE_PATH: ./API
   DOCKER_TAG: ${{ github.ref }}
 
 jobs:
