@@ -4,7 +4,7 @@ FROM openjdk:17 as Builder
 WORKDIR /src
 RUN mkdir api
 ADD . /src/api
-ADD ../deploy/start.sh /src/api/run/start.sh
+ADD ./start.sh /src/api/run/start.sh
 
 # Build jar
 WORKDIR /src/api
