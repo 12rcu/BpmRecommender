@@ -4,7 +4,7 @@ FROM openjdk:17 as Builder
 WORKDIR /src
 RUN mkdir api
 ADD . /src/api
-ADD ./start.sh /src/api/run/start.sh
+ADD start.sh /src/api/run/start.sh
 
 # Build jar
 WORKDIR /src/api
@@ -15,8 +15,8 @@ RUN ./gradlew build
 FROM openjdk:17-alpine
 
 WORKDIR /run/
-COPY --from=Builder /src/api/build/libs/*-all.jar /run/api.jar
-COPY --from=Builder /src/api/run/start.sh /run/start.sh
+COPY --from=Builder /src/api/API/build/libs/*-all.jar /run/api.jar
+COPY --from=Builder /src/api/API/run/start.sh /run/start.sh
 
 EXPOSE 80
 
