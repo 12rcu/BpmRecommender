@@ -16,7 +16,7 @@ FROM openjdk:17-alpine
 
 WORKDIR /run/
 COPY --from=Builder /src/api/API/build/libs/*-all.jar /run/api.jar
-COPY --from=Builder /src/api/API/run/start.sh /run/start.sh
+COPY --from=Builder /src/api/run/start.sh /run/start.sh
 
 EXPOSE 80
 
