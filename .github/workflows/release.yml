@@ -7,8 +7,6 @@ on:
     types: [ published ]
 
 env:
-  DOCKER_IMAGE_NAME: bpmn_recommender
-  DOCKERFILE_PATH: .
   BPM_CONFIG: ${{ secrets.BPM_CONFIG }}
 
 jobs:
@@ -29,12 +27,12 @@ jobs:
         id: meta
         uses: docker/metadata-action@9ec57ed1fcdbf14dcef7dfbe97b2010124a938b7
         with:
-          images: 12build/$DOCKER_IMAGE_NAME
+          images: 12build/bpmn_recommender
 
       - name: Build Docker image
         uses: docker/build-push-action@v2
         with:
-          context: $DOCKERFILE_PATH
+          context: .
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
