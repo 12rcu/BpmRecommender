@@ -4,7 +4,6 @@ DROP TABLE bpm_item_categories;
 DROP TABLE bpm_items;
 DROP TABLE bpm_user;
 
-
 CREATE TABLE bpm_item_categories
 (
     `id`          INT          NOT NULL AUTO_INCREMENT PRIMARY KEY,
@@ -33,9 +32,9 @@ CREATE TABLE bpm_item_category_inheritance
 
 CREATE TABLE bpm_user
 (
-    `id`        INT                    NOT NULL AUTO_INCREMENT PRIMARY KEY,
-    `type`      ENUM ('API', 'GOOGLE') NOT NULL DEFAULT 'API',
-    `type_info` TEXT                   NULL     DEFAULT NULL
+    `id`   INT          NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    `name` VARCHAR(255) NOT NULL,
+    `info` TEXT NULL DEFAULT NULL
 );
 
 CREATE TABLE bpm_user_recommendation

@@ -14,11 +14,11 @@ import org.ktorm.entity.*
 class UserDao(private val database: Database): KoinComponent {
     private val itemDao: ItemDao by inject()
 
-    fun addUser(type: UserType = UserType.API, typeInfo: String? = null): Int {
+    fun addUser(name: String, info: String? = null): Int {
         return database.insert(UserDbTable) {
-            set(UserDbTable.type, type)
-            if (typeInfo != null)
-                set(UserDbTable.typeInfo, typeInfo)
+            set(UserDbTable.name, name)
+            if (info != null)
+                set(UserDbTable.info, info)
         }
     }
 
