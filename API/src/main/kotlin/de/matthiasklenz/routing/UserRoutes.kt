@@ -1,8 +1,10 @@
 package de.matthiasklenz.routing
 
 import de.matthiasklenz.database.BpmDatabase
+import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.auth.*
+import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import kotlinx.serialization.Serializable
@@ -20,11 +22,23 @@ class UserRoutes(application: Application) : KoinComponent {
         val ratings: Map<Int, Int>
     )
 
+    @Serializable
+    data class UserData(
+        val userid: Int?,
+        val username: String,
+        val info: String?
+    )
+
     init {
         application.routing {
             authenticate {
                 route("/user") {
                     getRatings()
+                    createUser()
+                    getUser()
+                    route("/rating") {
+                        addRating()
+                    }
                 }
             }
         }
@@ -39,6 +53,37 @@ class UserRoutes(application: Application) : KoinComponent {
             }
 
             call.respond(data)
+        }
+    }
+
+    private fun Route.createUser() {
+        put {
+            val data = call.receive<UserData>()
+            val changes = database.userDao.addUser(data.username, data.info)
+            if(changes == 0)
+                call.respond(HttpStatusCode.InternalServerError, "Something went wrong, nothing has changed!")
+            else
+                call.respond(HttpStatusCode.OK)
+        }
+    }
+
+    private fun Route.getUser() {
+        get("{id}") {
+            val userid = call.parameters["userid"]?.toInt() ?: 0
+            if(userid <= 0) {
+                call.respond(HttpStatusCode.BadRequest, "Invalid userid '$userid'")
+            }
+            val data = database.userDao.getUser(userid)
+            call.respond(UserData(data?.id, data?.name ?: "undefined", data?.info))
+        }
+    }
+
+    private fun Route.addRating() {
+        post {
+            val data = call.receive<UserRating>()
+            data.ratings.forEach { (item, rating) ->
+                database.userDao.addRating(item, data.userid, rating)
+            }
         }
     }
 }
