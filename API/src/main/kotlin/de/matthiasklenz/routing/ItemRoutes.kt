@@ -1,16 +1,14 @@
 package de.matthiasklenz.routing
 
 import de.matthiasklenz.database.BpmDatabase
-import de.matthiasklenz.database.dao.ItemDao
 import io.ktor.http.*
 import io.ktor.server.application.*
+import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import kotlinx.serialization.Serializable
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
-import org.ktorm.dsl.forEach
-import org.ktorm.dsl.limit
 import org.ktorm.entity.map
 
 class ItemRoutes(application: Application) : KoinComponent {
@@ -20,7 +18,7 @@ class ItemRoutes(application: Application) : KoinComponent {
     data class Item(
         val name: String,
         val description: String,
-        val id: Int
+        val id: Int?
     )
 
     init {
@@ -44,7 +42,15 @@ class ItemRoutes(application: Application) : KoinComponent {
     private fun Routing.createItem() {
         route("/item/{id}") {
             put {
-
+                val data = call.receive<Item>()
+                val effectedRows = database.itemDao.insertItem(data.name, data.description)
+                if (effectedRows == 1)
+                    call.respond(HttpStatusCode.OK)
+                else
+                    call.respond(
+                        HttpStatusCode.InternalServerError,
+                        "Something went wrong: $effectedRows effected rows!"
+                    )
             }
             post {
 

@@ -32,6 +32,9 @@ class UserRoutes(application: Application) : KoinComponent {
     init {
         application.routing {
             authenticate {
+                route("/users") {
+                    getUsers()
+                }
                 route("/user") {
                     getRatings()
                     createUser()
@@ -41,6 +44,12 @@ class UserRoutes(application: Application) : KoinComponent {
                     }
                 }
             }
+        }
+    }
+
+    private fun Route.getUsers() {
+        get {
+            call.respond(database.userDao.getAllUsers().map { UserData(it.id, it.name, it.info) })
         }
     }
 
@@ -60,7 +69,7 @@ class UserRoutes(application: Application) : KoinComponent {
         put {
             val data = call.receive<UserData>()
             val changes = database.userDao.addUser(data.username, data.info)
-            if(changes == 0)
+            if (changes == 0)
                 call.respond(HttpStatusCode.InternalServerError, "Something went wrong, nothing has changed!")
             else
                 call.respond(HttpStatusCode.OK)
@@ -70,7 +79,7 @@ class UserRoutes(application: Application) : KoinComponent {
     private fun Route.getUser() {
         get("{id}") {
             val userid = call.parameters["userid"]?.toInt() ?: 0
-            if(userid <= 0) {
+            if (userid <= 0) {
                 call.respond(HttpStatusCode.BadRequest, "Invalid userid '$userid'")
             }
             val data = database.userDao.getUser(userid)
