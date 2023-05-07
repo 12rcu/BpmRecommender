@@ -1,10 +1,7 @@
 package de.matthiasklenz.routing
 
 import de.matthiasklenz.database.BpmDatabase
-import de.matthiasklenz.database.dao.ItemDao
-import de.matthiasklenz.database.dao.UserDao
 import de.matthiasklenz.plugins.bpmnAuth
-import de.matthiasklenz.recommend.Recommender
 import de.matthiasklenz.recommend.RecommenderImpl
 import de.matthiasklenz.recommend.comparer.Cosine
 import de.matthiasklenz.recommend.comparer.Euklid
@@ -19,7 +16,6 @@ import org.koin.core.component.inject
 import org.koin.core.module.Module
 import org.ktorm.entity.map
 import org.slf4j.Logger
-import java.lang.NumberFormatException
 
 class RecommenderRoutes(application: Application) : KoinComponent {
     companion object {
@@ -64,7 +60,7 @@ class RecommenderRoutes(application: Application) : KoinComponent {
             }
 
             val allRatings = database.userDao.getAllRatingsRecommender()
-            val allItems = database.itemDao.getItems().map { it.name }
+            val allItems = database.itemDao.getItems().map { it.id.toString() }
             val similarities = recommender.getUserSimilaritiesOf(userid, similarityMeasure, allItems, allRatings)
 
             call.respond(similarities)
@@ -91,7 +87,7 @@ class RecommenderRoutes(application: Application) : KoinComponent {
             val weightedMean = call.request.queryParameters["weightedMean"]?.toBoolean() ?: true
 
             val allRatings = database.userDao.getAllRatingsRecommender()
-            val allItems = database.itemDao.getItems().map { it.name }
+            val allItems = database.itemDao.getItems().map { it.id.toString() }
             val recommendations =
                 recommender.recommendUserBasedItemFor(
                     userid,

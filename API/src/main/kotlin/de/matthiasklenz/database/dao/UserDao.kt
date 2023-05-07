@@ -1,9 +1,11 @@
 package de.matthiasklenz.database.dao
 
-import de.matthiasklenz.database.tables.*
+import de.matthiasklenz.database.tables.UserDbEntity
+import de.matthiasklenz.database.tables.UserDbTable
+import de.matthiasklenz.database.tables.UserRatingDbEntity
+import de.matthiasklenz.database.tables.UserRatingDbTable
 import de.matthiasklenz.recommend.Recommender
 import org.koin.core.component.KoinComponent
-import org.koin.core.component.inject
 import org.ktorm.database.Database
 import org.ktorm.dsl.and
 import org.ktorm.dsl.eq
@@ -11,9 +13,7 @@ import org.ktorm.dsl.insert
 import org.ktorm.dsl.update
 import org.ktorm.entity.*
 
-class UserDao(private val database: Database): KoinComponent {
-    private val itemDao: ItemDao by inject()
-
+class UserDao(private val database: Database, private val itemDao: ItemDao): KoinComponent {
     /**
      * create a new user
      * @param name the name of the user (only used for logging)
@@ -70,8 +70,7 @@ class UserDao(private val database: Database): KoinComponent {
         return Recommender.UserRating(
             userid,
             getRatings(userid).associate {
-                val itemName = itemDao.getItemInfo(it.itemId)?.name ?: "undefined"
-                itemName to it.rating
+                it.itemId.toString() to it.rating
             }
         )
     }

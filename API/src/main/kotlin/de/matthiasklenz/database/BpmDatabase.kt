@@ -35,6 +35,6 @@ class BpmDatabase: KoinComponent {
         )
 
         itemDao = ItemDao(database)
-        userDao = UserDao(database)
+        userDao = UserDao(database, itemDao)
     }
 }
