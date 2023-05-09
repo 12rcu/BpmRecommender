@@ -93,6 +93,7 @@ class UserRoutes(application: Application) : KoinComponent {
             data.ratings.forEach { (item, rating) ->
                 database.userDao.addRating(item, data.userid, rating.coerceIn(1..5))
             }
+            call.respond(HttpStatusCode.OK)
         }
     }
 }
