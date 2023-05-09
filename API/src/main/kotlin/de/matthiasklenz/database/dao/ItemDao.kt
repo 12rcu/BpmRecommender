@@ -2,12 +2,11 @@ package de.matthiasklenz.database.dao
 
 import de.matthiasklenz.database.tables.ItemCategoriesDbTable
 import de.matthiasklenz.database.tables.ItemCategoryInheritanceDbTable
+import de.matthiasklenz.database.tables.ItemDBEntity
 import de.matthiasklenz.database.tables.ItemDbTable
 import org.ktorm.database.Database
 import org.ktorm.dsl.*
-import org.ktorm.entity.filter
-import org.ktorm.entity.firstOrNull
-import org.ktorm.entity.sequenceOf
+import org.ktorm.entity.*
 
 class ItemDao(private val database: Database) {
 
@@ -26,6 +25,18 @@ class ItemDao(private val database: Database) {
 
     fun getItem(name: String): Query {
         return itemToCategorySource().select().where { ItemDbTable.name eq name }
+    }
+
+    fun getItem(id: Int): Query {
+        return itemToCategorySource().select().where { ItemDbTable.id eq id }
+    }
+
+    fun getItems(): EntitySequence<ItemDBEntity, ItemDbTable> {
+        return database.sequenceOf(ItemDbTable)
+    }
+
+    fun getItemInfo(id: Int): ItemDBEntity? {
+        return database.sequenceOf(ItemDbTable).find { it.id eq id }
     }
 
     /**

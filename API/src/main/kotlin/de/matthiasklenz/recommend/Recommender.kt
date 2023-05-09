@@ -1,14 +1,17 @@
 package de.matthiasklenz.recommend
 
 import de.matthiasklenz.recommend.comparer.SimilarityMeasure
+import kotlinx.serialization.Serializable
 
 interface Recommender {
+    @Serializable
     data class UserSimilarity(
         val userid: Int,
         val ratings: Map<String, Int>,
         val similarity: Double
     )
 
+    @Serializable
     data class ItemSimilarity(
         val item: String,
         val similarity: Double
@@ -18,6 +21,7 @@ interface Recommender {
      * @param userid the userid that has rated items
      * @param ratings the ratings (item to rating), if a user hasn't rated an item it shouldn't be in the map
      */
+    @Serializable
     data class UserRating(
         val userid: Int,
         val ratings: Map<String, Int>
@@ -34,7 +38,7 @@ interface Recommender {
      */
     fun recommendUserBasedItemFor(
         userid: Int,
-        similarityMeasure: SimilarityMeasure.Type,
+        similarityMeasure: SimilarityMeasure,
         allItems: List<String>,
         ratings: List<UserRating>,
         knn: Int = 2,
@@ -49,7 +53,7 @@ interface Recommender {
      */
     fun getUserSimilaritiesOf(
         userid: Int,
-        similarityMeasure: SimilarityMeasure.Type,
+        similarityMeasure: SimilarityMeasure,
         allItems: List<String>,
         ratings: List<UserRating>
     ): List<UserSimilarity>
@@ -62,7 +66,7 @@ interface Recommender {
      */
     fun getItemSimilaritiesOf(
         item: String,
-        similarityMeasure: SimilarityMeasure.Type,
+        similarityMeasure: SimilarityMeasure,
         allItems: List<String>,
         ratings: List<UserRating>
     ): List<ItemSimilarity>

@@ -2,7 +2,8 @@ package de.matthiasklenz
 
 import de.matthiasklenz.config.ConfigLoader
 import de.matthiasklenz.database.BpmDatabase
-import de.matthiasklenz.plugins.*
+import de.matthiasklenz.plugins.JwtConfig
+import de.matthiasklenz.routing.RecommenderRoutes
 import io.ktor.server.application.*
 import io.ktor.server.config.*
 import io.ktor.server.engine.*
@@ -30,7 +31,9 @@ fun Application.module() {
                 single(qualifier("main")) { config.databases.main }
                 single { logger }
                 single { BpmDatabase() }
-            }
+                single { JwtConfig(config.token) }
+            },
+            RecommenderRoutes.koinModule()
         )
     }
 

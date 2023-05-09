@@ -1,23 +1,37 @@
 package de.matthiasklenz.database.dao
 
+import de.matthiasklenz.database.tables.UserDbEntity
 import de.matthiasklenz.database.tables.UserDbTable
-import de.matthiasklenz.database.tables.UserRecommendationsDbTable
-import de.matthiasklenz.database.tables.UserType
+import de.matthiasklenz.database.tables.UserRatingDbEntity
+import de.matthiasklenz.database.tables.UserRatingDbTable
+import de.matthiasklenz.recommend.Recommender
+import org.koin.core.component.KoinComponent
 import org.ktorm.database.Database
 import org.ktorm.dsl.and
 import org.ktorm.dsl.eq
 import org.ktorm.dsl.insert
 import org.ktorm.dsl.update
-import org.ktorm.entity.find
-import org.ktorm.entity.sequenceOf
+import org.ktorm.entity.*
 
-class UserDao(private val database: Database) {
-    fun addUser(type: UserType = UserType.API, typeInfo: String? = null): Int {
+class UserDao(private val database: Database): KoinComponent {
+    /**
+     * create a new user
+     * @param name the name of the user (only used for logging)
+     * @param info optional, if the user needs any notes
+     */
+    fun addUser(name: String, info: String? = null): Int {
         return database.insert(UserDbTable) {
-            set(UserDbTable.type, type)
-            if (typeInfo != null)
-                set(UserDbTable.typeInfo, typeInfo)
+            set(UserDbTable.name, name)
+            if (info != null)
+                set(UserDbTable.info, info)
         }
+    }
+
+    /**
+     * get the user db entry with the userid
+     */
+    fun getUser(id: Int): UserDbEntity? {
+        return database.sequenceOf(UserDbTable).filter { it.id eq id }.firstOrNull()
     }
 
     /**
@@ -28,23 +42,44 @@ class UserDao(private val database: Database) {
      */
     fun addRating(itemId: Int, userid: Int, value: Int): Int {
         val whereClause =
-            (UserRecommendationsDbTable.itemId eq itemId) and (UserRecommendationsDbTable.userid eq userid)
+            (UserRatingDbTable.itemId eq itemId) and (UserRatingDbTable.userid eq userid)
 
         val entry = database
-            .sequenceOf(UserRecommendationsDbTable)
+            .sequenceOf(UserRatingDbTable)
             .find { whereClause }
 
         return if (entry != null) {
-            database.update(UserRecommendationsDbTable) {
+            database.update(UserRatingDbTable) {
                 where { whereClause }
-                set(UserRecommendationsDbTable.rating, value)
+                set(UserRatingDbTable.rating, value)
             }
         } else {
-            database.insert(UserRecommendationsDbTable) {
-                set(UserRecommendationsDbTable.userid, userid)
-                set(UserRecommendationsDbTable.itemId, itemId)
-                set(UserRecommendationsDbTable.rating, value)
+            database.insert(UserRatingDbTable) {
+                set(UserRatingDbTable.userid, userid)
+                set(UserRatingDbTable.itemId, itemId)
+                set(UserRatingDbTable.rating, value)
             }
         }
+    }
+
+    fun getRatings(userid: Int): EntitySequence<UserRatingDbEntity, UserRatingDbTable> {
+        return database.sequenceOf(UserRatingDbTable).filter { it.userid eq userid }
+    }
+
+    fun getRatingsRecommender(userid: Int): Recommender.UserRating {
+        return Recommender.UserRating(
+            userid,
+            getRatings(userid).associate {
+                it.itemId.toString() to it.rating
+            }
+        )
+    }
+
+    fun getAllUsers(): EntitySequence<UserDbEntity, UserDbTable> {
+        return database.sequenceOf(UserDbTable)
+    }
+
+    fun getAllRatingsRecommender(): List<Recommender.UserRating> = database.sequenceOf(UserDbTable).map { user ->
+        getRatingsRecommender(user.id)
     }
 }

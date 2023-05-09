@@ -1,5 +1,6 @@
 package de.matthiasklenz.recommend
 
+import de.matthiasklenz.recommend.comparer.Euklid
 import de.matthiasklenz.recommend.comparer.SimilarityMeasure
 import org.koin.test.KoinTest
 import kotlin.test.Test
@@ -71,7 +72,7 @@ class RecommenderTest : KoinTest {
 
     @Test
     fun basicSimilaritiesEuklid() {
-        val sim = recommender.getUserSimilaritiesOf(2, SimilarityMeasure.Type.EUKLID, items, userRatings)
+        val sim = recommender.getUserSimilaritiesOf(2, Euklid(), items, userRatings)
         assertEquals(4, sim.size)
 
         assertEquals(0.12, sim[0].similarity, 0.05)
@@ -84,7 +85,7 @@ class RecommenderTest : KoinTest {
     fun recommendedItemsTest() {
         val predictedRatings = recommender.recommendUserBasedItemFor(
             2,
-            SimilarityMeasure.Type.EUKLID,
+            Euklid(),
             items,
             userRatings,
             weightedMean = false
@@ -98,7 +99,7 @@ class RecommenderTest : KoinTest {
     fun recommendedItemsWeightedTest() {
         val predictedRatings = recommender.recommendUserBasedItemFor(
             2,
-            SimilarityMeasure.Type.EUKLID,
+            Euklid(),
             items,
             userRatings,
             weightedMean = true
@@ -112,7 +113,7 @@ class RecommenderTest : KoinTest {
     fun assertFailOnMissingUserid() {
         val predictedRatings = recommender.recommendUserBasedItemFor(
             6,
-            SimilarityMeasure.Type.EUKLID,
+            Euklid(),
             items,
             userRatings,
             weightedMean = true
@@ -122,14 +123,14 @@ class RecommenderTest : KoinTest {
 
     @Test
     fun assertFailOnMissingUserid2() {
-        val sim = recommender.getUserSimilaritiesOf(6, SimilarityMeasure.Type.EUKLID, items, userRatings)
+        val sim = recommender.getUserSimilaritiesOf(6, Euklid(), items, userRatings)
         assertEquals(0, sim.size)
     }
 
     @Test
     fun testItemSimilarities() {
         val sim =
-            recommender.getItemSimilaritiesOf("Earl of Sandwiches", SimilarityMeasure.Type.EUKLID, items, userRatings)
+            recommender.getItemSimilaritiesOf("Earl of Sandwiches", Euklid(), items, userRatings)
         assertEquals(0.2, sim[0].similarity, 0.05)
         assertEquals(0.18, sim[1].similarity, 0.05)
         assertEquals(0.16, sim[2].similarity, 0.05)

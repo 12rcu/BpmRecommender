@@ -11,7 +11,7 @@ want to try.
 
 ## Recommender Structure
 
-Items is the term for the BPN Notations. Users don't have to be actual users but can instead be profiles an actual user
+Items is the term for the BPM Notations. Users don't have to be actual users but can instead be profiles an actual user
 can be matched against.
 
 Tables:
@@ -44,7 +44,6 @@ For contributions, or forks visit [Impl Docs](./docs/api/Home.md)
 
 ## Deploy your own Recommender API
 
-Download the latest build from the [Releases](https://github.com/12rcu/BpmRecommender/releases)?
-Or use the docker image that I will provide?
-
-=> TODO
+Visit https://hub.docker.com/r/12build/bpmn_recommender/tags to see the latest docker image builds to use.
+Map a config.yaml volume and start the api. If you want to add a frontend to the deployed api, you have to map/mount a
+frontend directory with the frontend files to `/run/dist/`.
