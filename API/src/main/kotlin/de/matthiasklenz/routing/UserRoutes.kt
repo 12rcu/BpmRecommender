@@ -91,7 +91,7 @@ class UserRoutes(application: Application) : KoinComponent {
         post {
             val data = call.receive<UserRating>()
             data.ratings.forEach { (item, rating) ->
-                database.userDao.addRating(item, data.userid, rating)
+                database.userDao.addRating(item, data.userid, rating.coerceIn(1..5))
             }
         }
     }

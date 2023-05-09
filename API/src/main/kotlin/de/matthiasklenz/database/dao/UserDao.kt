@@ -13,7 +13,7 @@ import org.ktorm.dsl.insert
 import org.ktorm.dsl.update
 import org.ktorm.entity.*
 
-class UserDao(private val database: Database, private val itemDao: ItemDao): KoinComponent {
+class UserDao(private val database: Database): KoinComponent {
     /**
      * create a new user
      * @param name the name of the user (only used for logging)
