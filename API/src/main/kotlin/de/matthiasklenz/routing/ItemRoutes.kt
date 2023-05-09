@@ -16,16 +16,16 @@ class ItemRoutes(application: Application) : KoinComponent {
 
     @Serializable
     data class Item(
+        val id: Int? = null,
         val name: String,
-        val description: String,
-        val id: Int?
+        val description: String
     )
 
     init {
         with(application) {
             routing {
                 allItems()
-                createItem()
+                item()
             }
         }
     }
@@ -33,14 +33,14 @@ class ItemRoutes(application: Application) : KoinComponent {
     private fun Routing.allItems() {
         get("/items") {
             val data = database.itemDao.getItems().map {
-                Item(it.name, it.description, it.id)
+                Item(it.id, it.name, it.description)
             }
             call.respond(data)
         }
     }
 
-    private fun Routing.createItem() {
-        route("/item/{id}") {
+    private fun Routing.item() {
+        route("/item") {
             put {
                 val data = call.receive<Item>()
                 val effectedRows = database.itemDao.insertItem(data.name, data.description)
@@ -52,12 +52,9 @@ class ItemRoutes(application: Application) : KoinComponent {
                         "Something went wrong: $effectedRows effected rows!"
                     )
             }
-            post {
-
-            }
-            get {
+            get("/{id}") {
                 if (call.parameters["id"] == null) {
-                    call.respond(database.itemDao.getItems().map { SerializedItem(it.id, it.name, it.description) })
+                    call.respond(database.itemDao.getItems().map { Item(it.id, it.name, it.description) })
                 } else if (call.parameters["id"]?.toIntOrNull() != null) {
                     val query = database.itemDao.getItem(call.parameters["id"]!!.toInt())
                     if (query.totalRecords <= 0)
@@ -70,11 +67,4 @@ class ItemRoutes(application: Application) : KoinComponent {
             }
         }
     }
-
-    @Serializable
-    data class SerializedItem(
-        val id: Int,
-        val name: String,
-        val description: String
-    )
 }
