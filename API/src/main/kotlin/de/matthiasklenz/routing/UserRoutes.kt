@@ -19,14 +19,14 @@ class UserRoutes(application: Application) : KoinComponent {
     @Serializable
     data class UserRating(
         val userid: Int,
-        val ratings: Map<Int, Int>
+        val ratings: Map<String, Int>
     )
 
     @Serializable
     data class UserData(
-        val userid: Int?,
+        val userid: Int? = null,
         val username: String,
-        val info: String?
+        val info: String? = null
     )
 
     init {
@@ -58,7 +58,7 @@ class UserRoutes(application: Application) : KoinComponent {
             val data = database.userDao.getAllUsers().map { user ->
                 UserRating(
                     user.id,
-                    database.userDao.getRatings(user.id).associate { it.itemId to it.rating })
+                    database.userDao.getRatings(user.id).associate { it.itemId.toString() to it.rating })
             }
 
             call.respond(data)
@@ -91,7 +91,7 @@ class UserRoutes(application: Application) : KoinComponent {
         post {
             val data = call.receive<UserRating>()
             data.ratings.forEach { (item, rating) ->
-                database.userDao.addRating(item, data.userid, rating.coerceIn(1..5))
+                database.userDao.addRating(item.toInt(), data.userid, rating.coerceIn(1..5))
             }
             call.respond(HttpStatusCode.OK)
         }
