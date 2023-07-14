@@ -9,6 +9,8 @@ class Euklid : SimilarityMeasure {
         dataB: Map<String, Int>,
         allItems: List<String>
     ): Number {
-        return 1 / (1 + sqrt(allItems.sumOf { ((dataA[it] ?: 0) - (dataB[it] ?: 0)).toDouble().pow(2) }))
+        return 1 / (1 + sqrt(allItems.sumOf {
+            ((dataA[it] ?: 0) - (dataB[it] ?: 0)).toDouble().pow(2)
+        }))
     }
 }
