@@ -13,7 +13,7 @@ import org.ktorm.dsl.insert
 import org.ktorm.dsl.update
 import org.ktorm.entity.*
 
-class UserDao(private val database: Database): KoinComponent {
+class UserDao(private val database: Database) : KoinComponent {
     /**
      * create a new user
      * @param name the name of the user (only used for logging)
@@ -22,8 +22,9 @@ class UserDao(private val database: Database): KoinComponent {
     fun addUser(name: String, info: String? = null): Int {
         return database.insert(UserDbTable) {
             set(UserDbTable.name, name)
-            if (info != null)
+            if (info != null) {
                 set(UserDbTable.info, info)
+            }
         }
     }
 
@@ -31,7 +32,9 @@ class UserDao(private val database: Database): KoinComponent {
      * get the user db entry with the userid
      */
     fun getUser(id: Int): UserDbEntity? {
-        return database.sequenceOf(UserDbTable).filter { it.id eq id }.firstOrNull()
+        return database.sequenceOf(UserDbTable).filter {
+            it.id eq id
+        }.firstOrNull()
     }
 
     /**
@@ -63,7 +66,9 @@ class UserDao(private val database: Database): KoinComponent {
     }
 
     fun getRatings(userid: Int): EntitySequence<UserRatingDbEntity, UserRatingDbTable> {
-        return database.sequenceOf(UserRatingDbTable).filter { it.userid eq userid }
+        return database.sequenceOf(UserRatingDbTable).filter {
+            it.userid eq userid
+        }
     }
 
     fun getRatingsRecommender(userid: Int): Recommender.UserRating {
@@ -79,7 +84,10 @@ class UserDao(private val database: Database): KoinComponent {
         return database.sequenceOf(UserDbTable)
     }
 
-    fun getAllRatingsRecommender(): List<Recommender.UserRating> = database.sequenceOf(UserDbTable).map { user ->
-        getRatingsRecommender(user.id)
-    }
+    fun getAllRatingsRecommender(): List<Recommender.UserRating> =
+        database.sequenceOf(
+            UserDbTable
+        ).map { user ->
+            getRatingsRecommender(user.id)
+        }
 }

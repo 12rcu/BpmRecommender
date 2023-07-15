@@ -7,10 +7,13 @@ class Euklid : SimilarityMeasure {
     override fun compare(
         dataA: Map<String, Int>,
         dataB: Map<String, Int>,
-        allItems: List<String>
+        allItems: List<String>,
     ): Number {
-        return 1 / (1 + sqrt(allItems.sumOf {
-            ((dataA[it] ?: 0) - (dataB[it] ?: 0)).toDouble().pow(2)
-        }))
+        val sum = allItems.sumOf {
+            ((dataA[it] ?: 0) - (dataB[it] ?: 0))
+                .toDouble().pow(2)
+        }
+
+        return 1 / (1 + sqrt(sum))
     }
 }

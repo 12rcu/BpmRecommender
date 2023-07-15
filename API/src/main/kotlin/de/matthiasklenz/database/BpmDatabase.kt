@@ -8,8 +8,10 @@ import org.koin.core.component.inject
 import org.koin.core.qualifier.qualifier
 import org.ktorm.database.Database
 
-class BpmDatabase: KoinComponent {
-    private val dbProperties: SqlDatabase by inject(qualifier("main"))
+class BpmDatabase : KoinComponent {
+    private val dbProperties: SqlDatabase by inject(
+        qualifier("main")
+    )
     private val database: Database
     val itemDao: ItemDao
     val userDao: UserDao
@@ -17,7 +19,8 @@ class BpmDatabase: KoinComponent {
     init {
         val dbUrl = "${dbProperties.host}:${dbProperties.port}"
 
-        val jdbcUrl = "jdbc:mysql://$dbUrl/${dbProperties.schema}"
+        val jdbcUrl =
+            "jdbc:mysql://$dbUrl/${dbProperties.schema}"
         val jdbcParameters = mapOf<String, Any>(
             "user" to dbProperties.user,
             "password" to dbProperties.password,

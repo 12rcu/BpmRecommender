@@ -3,8 +3,8 @@ package de.matthiasklenz.plugins
 import com.auth0.jwt.JWT
 import com.auth0.jwt.JWTVerifier
 import com.auth0.jwt.algorithms.Algorithm
-import io.ktor.server.auth.*
-import io.ktor.server.auth.jwt.*
+import io.ktor.server.auth.Principal
+import io.ktor.server.auth.jwt.JWTAuthenticationProvider
 
 class JwtConfig(jwtSecret: String) {
     companion object Constants {
@@ -20,7 +20,6 @@ class JwtConfig(jwtSecret: String) {
         .withIssuer(jwtIssuer)
         .build()
 
-
     /**
      * Generate a token for an authenticated user
      */
@@ -34,12 +33,18 @@ class JwtConfig(jwtSecret: String) {
     /**
      * Configure the jwt ktor authentication feature
      */
-    fun configureKtorFeature(config: JWTAuthenticationProvider.Config) = with(config) {
+    fun configureKtorFeature(
+        config: JWTAuthenticationProvider.Config,
+    ) = with(config) {
         verifier(jwtVerifier)
         realm = jwtRealm
         validate {
-            val userinfo = it.payload.getClaim(CLAIM_USERINFO).asString()
-            val userRole = it.payload.getClaim(CLAIM_USER_ROLE).asString()
+            val userinfo = it.payload.getClaim(
+                CLAIM_USERINFO
+            ).asString()
+            val userRole = it.payload.getClaim(
+                CLAIM_USER_ROLE
+            ).asString()
 
             if (userinfo != null && userRole != null) {
                 User(userinfo, userRole)
@@ -52,5 +57,8 @@ class JwtConfig(jwtSecret: String) {
     /**
      * data object, that contains information of a user that is authenticated via jwt
      */
-    data class User(val userinfo: String, val role: String) : Principal
+    data class User(
+        val userinfo: String,
+        val role: String,
+    ) : Principal
 }

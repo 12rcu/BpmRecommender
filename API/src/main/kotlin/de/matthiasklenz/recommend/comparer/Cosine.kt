@@ -8,7 +8,7 @@ class Cosine : SimilarityMeasure {
         fun basicCalc(
             dataA: Map<String, Number>,
             dataB: Map<String, Number>,
-            allItems: List<String>
+            allItems: List<String>,
         ): Number {
             var sumATimesB = 0.0
             var sumASquared = 0.0
@@ -27,7 +27,7 @@ class Cosine : SimilarityMeasure {
     override fun compare(
         dataA: Map<String, Int>,
         dataB: Map<String, Int>,
-        allItems: List<String>
+        allItems: List<String>,
     ): Number {
         return basicCalc(dataA, dataB, allItems)
     }

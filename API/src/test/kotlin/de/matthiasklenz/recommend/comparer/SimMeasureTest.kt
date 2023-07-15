@@ -1,7 +1,8 @@
 package de.matthiasklenz.recommend.comparer
 
 import de.matthiasklenz.recommend.RecommenderTest
-import kotlin.test.*
+import kotlin.test.Test
+import kotlin.test.assertEquals
 
 class SimMeasureTest {
     companion object Data {

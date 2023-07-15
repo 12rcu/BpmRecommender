@@ -8,13 +8,13 @@ interface Recommender {
     data class UserSimilarity(
         val userid: Int,
         val ratings: Map<String, Int>,
-        val similarity: Double
+        val similarity: Double,
     )
 
     @Serializable
     data class ItemSimilarity(
         val item: String,
-        val similarity: Double
+        val similarity: Double,
     )
 
     /**
@@ -24,7 +24,7 @@ interface Recommender {
     @Serializable
     data class UserRating(
         val userid: Int,
-        val ratings: Map<String, Int>
+        val ratings: Map<String, Int>,
     )
 
     /**
@@ -42,7 +42,7 @@ interface Recommender {
         allItems: List<String>,
         ratings: List<UserRating>,
         knn: Int = 2,
-        weightedMean: Boolean = true
+        weightedMean: Boolean = true,
     ): Map<String, Double>
 
     /**
@@ -55,7 +55,7 @@ interface Recommender {
         userid: Int,
         similarityMeasure: SimilarityMeasure,
         allItems: List<String>,
-        ratings: List<UserRating>
+        ratings: List<UserRating>,
     ): List<UserSimilarity>
 
     /**
@@ -68,6 +68,6 @@ interface Recommender {
         item: String,
         similarityMeasure: SimilarityMeasure,
         allItems: List<String>,
-        ratings: List<UserRating>
+        ratings: List<UserRating>,
     ): List<ItemSimilarity>
 }

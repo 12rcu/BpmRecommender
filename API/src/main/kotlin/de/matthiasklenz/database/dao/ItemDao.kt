@@ -16,7 +16,10 @@ class ItemDao(private val database: Database) {
     private fun itemToCategorySource(): QuerySource {
         return database
             .from(ItemDbTable)
-            .crossJoin(ItemCategoryInheritanceDbTable, on = ItemDbTable.id eq ItemCategoryInheritanceDbTable.itemId)
+            .crossJoin(
+                ItemCategoryInheritanceDbTable,
+                on = ItemDbTable.id eq ItemCategoryInheritanceDbTable.itemId
+            )
             .crossJoin(
                 ItemCategoriesDbTable,
                 on = ItemCategoryInheritanceDbTable.categoryId eq ItemCategoriesDbTable.id
@@ -24,11 +27,15 @@ class ItemDao(private val database: Database) {
     }
 
     fun getItem(name: String): Query {
-        return itemToCategorySource().select().where { ItemDbTable.name eq name }
+        return itemToCategorySource().select().where {
+            ItemDbTable.name eq name
+        }
     }
 
     fun getItem(id: Int): Query {
-        return itemToCategorySource().select().where { ItemDbTable.id eq id }
+        return itemToCategorySource().select().where {
+            ItemDbTable.id eq id
+        }
     }
 
     fun getItems(): EntitySequence<ItemDBEntity, ItemDbTable> {
@@ -36,7 +43,9 @@ class ItemDao(private val database: Database) {
     }
 
     fun getItemInfo(id: Int): ItemDBEntity? {
-        return database.sequenceOf(ItemDbTable).find { it.id eq id }
+        return database.sequenceOf(
+            ItemDbTable
+        ).find { it.id eq id }
     }
 
     /**
@@ -63,7 +72,11 @@ class ItemDao(private val database: Database) {
      * example an effort range (unspecified, low, medium, high) => range = 3
      * @return the effected rows
      */
-    fun addCategory(name: String, description: String = "", range: Int = 1): Int {
+    fun addCategory(
+        name: String,
+        description: String = "",
+        range: Int = 1,
+    ): Int {
         return database.insert(ItemCategoriesDbTable) {
             set(ItemCategoriesDbTable.name, name)
             set(ItemCategoriesDbTable.description, description)
@@ -79,14 +92,18 @@ class ItemDao(private val database: Database) {
      * @param category the category id of items, note: category must already exist!
      * @return the affected rows
      */
-    fun assessItemToCategory(item: Int, category: Int, value: Int): Int {
+    fun assessItemToCategory(
+        item: Int,
+        category: Int,
+        value: Int,
+    ): Int {
         val alreadyAssessed = database
             .sequenceOf(ItemCategoryInheritanceDbTable)
             .filter { (it.categoryId eq category) and (it.itemId eq item) }
             .firstOrNull() != null
 
         return if (alreadyAssessed) {
-            //update the entry
+            // update the entry
             database.update(ItemCategoryInheritanceDbTable) {
                 where {
                     (ItemCategoryInheritanceDbTable.categoryId eq category) and (ItemCategoryInheritanceDbTable.itemId eq item)
@@ -94,10 +111,13 @@ class ItemDao(private val database: Database) {
                 set(ItemCategoryInheritanceDbTable.value, value)
             }
         } else {
-            //insert a new entry
+            // insert a new entry
             database.insert(ItemCategoryInheritanceDbTable) {
                 set(ItemCategoryInheritanceDbTable.itemId, item)
-                set(ItemCategoryInheritanceDbTable.categoryId, category)
+                set(
+                    ItemCategoryInheritanceDbTable.categoryId,
+                    category
+                )
                 set(ItemCategoryInheritanceDbTable.value, value)
             }
         }

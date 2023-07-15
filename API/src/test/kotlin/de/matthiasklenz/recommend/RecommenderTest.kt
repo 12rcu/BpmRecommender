@@ -1,7 +1,6 @@
 package de.matthiasklenz.recommend
 
 import de.matthiasklenz.recommend.comparer.Euklid
-import de.matthiasklenz.recommend.comparer.SimilarityMeasure
 import org.koin.test.KoinTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -66,13 +65,18 @@ class RecommenderTest : KoinTest {
                     "Earl of Sandwiches" to 3,
                     "Grecos" to 2
                 )
-            ),
+            )
         )
     }
 
     @Test
     fun basicSimilaritiesEuklid() {
-        val sim = recommender.getUserSimilaritiesOf(2, Euklid(), items, userRatings)
+        val sim = recommender.getUserSimilaritiesOf(
+            2,
+            Euklid(),
+            items,
+            userRatings
+        )
         assertEquals(4, sim.size)
 
         assertEquals(0.12, sim[0].similarity, 0.05)
@@ -97,15 +101,20 @@ class RecommenderTest : KoinTest {
 
     @Test
     fun recommendedItemsWeightedTest() {
-        val predictedRatings = recommender.recommendUserBasedItemFor(
-            2,
-            Euklid(),
-            items,
-            userRatings,
-            weightedMean = true
-        )
+        val predictedRatings =
+            recommender.recommendUserBasedItemFor(
+                2,
+                Euklid(),
+                items,
+                userRatings,
+                weightedMean = true
+            )
         assertEquals(2, predictedRatings.size)
-        assertEquals(2.10, predictedRatings["Pasta und Pizza"]!!, 0.05)
+        assertEquals(
+            2.10,
+            predictedRatings["Pasta und Pizza"]!!,
+            0.05
+        )
         assertEquals(1.55, predictedRatings["Grecos"]!!, 0.05)
     }
 
@@ -123,14 +132,24 @@ class RecommenderTest : KoinTest {
 
     @Test
     fun assertFailOnMissingUserid2() {
-        val sim = recommender.getUserSimilaritiesOf(6, Euklid(), items, userRatings)
+        val sim = recommender.getUserSimilaritiesOf(
+            6,
+            Euklid(),
+            items,
+            userRatings
+        )
         assertEquals(0, sim.size)
     }
 
     @Test
     fun testItemSimilarities() {
         val sim =
-            recommender.getItemSimilaritiesOf("Earl of Sandwiches", Euklid(), items, userRatings)
+            recommender.getItemSimilaritiesOf(
+                "Earl of Sandwiches",
+                Euklid(),
+                items,
+                userRatings
+            )
         assertEquals(0.2, sim[0].similarity, 0.05)
         assertEquals(0.18, sim[1].similarity, 0.05)
         assertEquals(0.16, sim[2].similarity, 0.05)

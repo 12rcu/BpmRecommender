@@ -7,17 +7,21 @@ import de.matthiasklenz.recommend.comparer.Cosine
 import de.matthiasklenz.recommend.comparer.Euklid
 import de.matthiasklenz.recommend.comparer.Pearson
 import de.matthiasklenz.recommend.comparer.SimilarityMeasure
-import io.ktor.server.application.*
-import io.ktor.server.auth.*
-import io.ktor.server.response.*
-import io.ktor.server.routing.*
+import io.ktor.server.application.Application
+import io.ktor.server.application.call
+import io.ktor.server.auth.authenticate
+import io.ktor.server.response.respond
+import io.ktor.server.routing.Route
+import io.ktor.server.routing.get
+import io.ktor.server.routing.routing
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 import org.koin.core.module.Module
 import org.ktorm.entity.map
 import org.slf4j.Logger
 
-class RecommenderRoutes(application: Application) : KoinComponent {
+class RecommenderRoutes(application: Application) :
+    KoinComponent {
     companion object {
         fun koinModule(): Module = org.koin.dsl.module {
             single { Euklid() }
@@ -50,31 +54,88 @@ class RecommenderRoutes(application: Application) : KoinComponent {
 
     private fun Route.userBasedFiltering() {
         get("/userBased/similarities/{userid}") {
-            if (!bpmnAuth("/userBased/similarities", logger))
+            val authenticated = bpmnAuth(
+                routeInfo = "/userBased/similarities",
+                logger
+            )
+            if (!authenticated) {
                 return@get
+            }
 
-            val userid: Int = call.parameters["userid"]?.toIntOrNull() ?: 0
+            val userid: Int = call
+                .parameters["userid"]
+                ?.toIntOrNull()
+                ?: 0
+
             val similarityMeasure: SimilarityMeasure =
-                simStringToObj(call.request.queryParameters["SimilarityMeasure"] ?: "")
+                simStringToObj(
+                    str = call
+                        .request
+                        .queryParameters["SimilarityMeasure"]
+                        ?: ""
+                )
 
-            val allRatings = database.userDao.getAllRatingsRecommender()
-            val allItems = database.itemDao.getItems().map { it.id.toString() }
-            val similarities = recommender.getUserSimilaritiesOf(userid, similarityMeasure, allItems, allRatings)
+            val allRatings = database
+                .userDao
+                .getAllRatingsRecommender()
+
+            val allItems = database
+                .itemDao
+                .getItems()
+                .map { it.id.toString() }
+
+            val similarities = recommender.getUserSimilaritiesOf(
+                userid,
+                similarityMeasure,
+                allItems,
+                allRatings
+            )
 
             call.respond(similarities)
         }
         get("/userBased/recommendations/{userid}") {
-            if (!bpmnAuth("/userBased/recommendations", logger))
+            val authenticated = bpmnAuth(
+                routeInfo = "/userBased/recommendations",
+                logger
+            )
+            if (!authenticated) {
                 return@get
+            }
 
-            val userid: Int = call.parameters["userid"]?.toInt() ?: 0
+            val userid: Int = call
+                .parameters["userid"]
+                ?.toInt()
+                ?: 0
+
             val similarityMeasure: SimilarityMeasure =
-                simStringToObj(call.request.queryParameters["SimilarityMeasure"] ?: "")
-            val knn: Int = call.request.queryParameters["knn"]?.toIntOrNull() ?: 2
-            val weightedMean = call.request.queryParameters["weightedMean"]?.toBooleanStrictOrNull() ?: true
+                simStringToObj(
+                    call
+                        .request
+                        .queryParameters["SimilarityMeasure"]
+                        ?: ""
+                )
 
-            val allRatings = database.userDao.getAllRatingsRecommender()
-            val allItems = database.itemDao.getItems().map { it.id.toString() }
+            val knn: Int = call
+                .request
+                .queryParameters["knn"]
+                ?.toIntOrNull()
+                ?: 2
+
+            val weightedMean = call
+                .request
+                .queryParameters["weightedMean"]
+                ?.toBooleanStrictOrNull()
+                ?: true
+
+            val allRatings = database
+                .userDao
+                .getAllRatingsRecommender()
+
+            val allItems = database
+                .itemDao
+                .getItems()
+                .map { it.id.toString() }
+
             val recommendations =
                 recommender.recommendUserBasedItemFor(
                     userid,
@@ -91,31 +152,63 @@ class RecommenderRoutes(application: Application) : KoinComponent {
 
     private fun Route.itemBasedFiltering() {
         get("/itemBased/similarities/{itemId}") {
-            if (!bpmnAuth("/itemBased/similarities", logger))
+            val authenticated = bpmnAuth(
+                routeInfo = "/itemBased/similarities",
+                logger
+            )
+            if (!authenticated) {
                 return@get
-            val itemId: Int = call.parameters["itemId"]?.toIntOrNull() ?: 0
+            }
+            val itemId: Int =
+                call.parameters["itemId"]?.toIntOrNull() ?: 0
             val similarityMeasure: SimilarityMeasure =
-                simStringToObj(call.request.queryParameters["SimilarityMeasure"] ?: "")
+                simStringToObj(
+                    str = call
+                        .request
+                        .queryParameters["SimilarityMeasure"]
+                        ?: ""
+                )
 
-            val allItems = database.itemDao.getItems().map { it.id.toString() }
-            val allRatings = database.userDao.getAllRatingsRecommender()
+            val allItems = database.itemDao.getItems().map {
+                it.id.toString()
+            }
+            val allRatings =
+                database.userDao.getAllRatingsRecommender()
 
             val similarities =
-                recommender.getItemSimilaritiesOf(itemId.toString(), similarityMeasure, allItems, allRatings)
+                recommender.getItemSimilaritiesOf(
+                    itemId.toString(),
+                    similarityMeasure,
+                    allItems,
+                    allRatings
+                )
             call.respond(similarities)
         }
         get("/itemBased/recommendations/{itemId}") {
-            if (!bpmnAuth("/itemBased/recommendations", logger))
+            val authenticated = bpmnAuth(
+                routeInfo = "/itemBased/recommendations",
+                logger
+            )
+            if (!authenticated) {
                 return@get
-            val itemId: Int = call.parameters["itemId"]?.toIntOrNull() ?: 0
+            }
+
+            val itemId: Int = call
+                .parameters["itemId"]
+                ?.toIntOrNull()
+                ?: 0
+
             val similarityMeasure: SimilarityMeasure =
-                simStringToObj(call.request.queryParameters["SimilarityMeasure"] ?: "")
+                simStringToObj(
+                    call.request.queryParameters["SimilarityMeasure"]
+                        ?: ""
+                )
         }
     }
 
     private fun simStringToObj(str: String) = when (str) {
         "euklid" -> euklid
         "cosine" -> cosine
-        else -> pearson //also functions as adjusted cosine
+        else -> pearson // also functions as adjusted cosine
     }
 }
