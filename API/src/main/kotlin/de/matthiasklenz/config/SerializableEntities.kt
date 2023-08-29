@@ -6,7 +6,8 @@ import kotlinx.serialization.Serializable
 data class Config(
     val token: String,
     val databases: Databases,
-    val auth: Auth,
+    val allowCORS: Boolean = false,
+    val allowedCORS: List<String> = listOf(),
 )
 
 @Serializable
@@ -21,9 +22,4 @@ data class SqlDatabase(
     val schema: String,
     val user: String,
     val password: String,
-)
-
-@Serializable
-data class Auth(
-    val googleSecret: String,
 )

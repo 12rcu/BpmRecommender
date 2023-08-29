@@ -16,9 +16,15 @@ class ConfigLoader {
      *
      * @return the Config of the API
      */
-    fun loadConfig(): Config? {
-        val conf = loadConfigStr() ?: return null
-        return createYamlParser().decodeFromString(conf)
+    fun loadConfig(): Result<Config> {
+        val conf = loadConfigStr()
+        return if (conf == null) {
+            Result.failure(Error("Could not find Config!"))
+        } else {
+            Result.success(
+                createYamlParser().decodeFromString(conf)
+            )
+        }
     }
 
     private fun loadConfigStr(): String? {

@@ -13,7 +13,7 @@ class SimMeasureTest {
 
     @Test
     fun testEuklid() {
-        val sim = Euklid().compare(userA, userB, items)
+        val sim = Euclid().compare(userA, userB, items)
         assertEquals(0.21, sim.toDouble(), 0.1)
     }
 

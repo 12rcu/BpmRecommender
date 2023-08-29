@@ -7,10 +7,7 @@ import de.matthiasklenz.database.tables.UserRatingDbTable
 import de.matthiasklenz.recommend.Recommender
 import org.koin.core.component.KoinComponent
 import org.ktorm.database.Database
-import org.ktorm.dsl.and
-import org.ktorm.dsl.eq
-import org.ktorm.dsl.insert
-import org.ktorm.dsl.update
+import org.ktorm.dsl.*
 import org.ktorm.entity.*
 
 class UserDao(private val database: Database) : KoinComponent {
@@ -35,6 +32,12 @@ class UserDao(private val database: Database) : KoinComponent {
         return database.sequenceOf(UserDbTable).filter {
             it.id eq id
         }.firstOrNull()
+    }
+
+    fun delUser(id: Int) {
+        database.delete(UserDbTable) {
+            it.id eq id
+        }
     }
 
     /**

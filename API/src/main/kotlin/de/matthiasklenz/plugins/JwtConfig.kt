@@ -10,14 +10,14 @@ class JwtConfig(jwtSecret: String) {
     companion object Constants {
         private const val CLAIM_USERINFO = "userinfo"
         private const val CLAIM_USER_ROLE = "userRole"
-        private const val jwtIssuer = "de.matthiasklenz.upload"
-        private const val jwtRealm = "de.matthiasklenz.upload"
+        private const val JWT_ISSUER = "de.matthiasklenz.upload"
+        private const val JWT_REALM = "de.matthiasklenz.upload"
     }
 
     private val jwtAlgorithm = Algorithm.HMAC512(jwtSecret)
     private val jwtVerifier: JWTVerifier = JWT
         .require(jwtAlgorithm)
-        .withIssuer(jwtIssuer)
+        .withIssuer(JWT_ISSUER)
         .build()
 
     /**
@@ -25,7 +25,7 @@ class JwtConfig(jwtSecret: String) {
      */
     fun generateToken(user: User): String = JWT.create()
         .withSubject("Authentication")
-        .withIssuer(jwtIssuer)
+        .withIssuer(JWT_ISSUER)
         .withClaim(CLAIM_USERINFO, user.userinfo)
         .withClaim(CLAIM_USER_ROLE, user.role)
         .sign(jwtAlgorithm)
@@ -37,7 +37,7 @@ class JwtConfig(jwtSecret: String) {
         config: JWTAuthenticationProvider.Config,
     ) = with(config) {
         verifier(jwtVerifier)
-        realm = jwtRealm
+        realm = JWT_REALM
         validate {
             val userinfo = it.payload.getClaim(
                 CLAIM_USERINFO
@@ -55,7 +55,8 @@ class JwtConfig(jwtSecret: String) {
     }
 
     /**
-     * data object, that contains information of a user that is authenticated via jwt
+     * data object, that contains information of a user that is
+     * authenticated via jwt
      */
     data class User(
         val userinfo: String,

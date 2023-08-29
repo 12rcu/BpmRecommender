@@ -1,6 +1,6 @@
 package de.matthiasklenz.recommend
 
-import de.matthiasklenz.recommend.comparer.Euklid
+import de.matthiasklenz.recommend.comparer.Euclid
 import org.koin.test.KoinTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -73,7 +73,7 @@ class RecommenderTest : KoinTest {
     fun basicSimilaritiesEuklid() {
         val sim = recommender.getUserSimilaritiesOf(
             2,
-            Euklid(),
+            Euclid(),
             items,
             userRatings
         )
@@ -89,7 +89,7 @@ class RecommenderTest : KoinTest {
     fun recommendedItemsTest() {
         val predictedRatings = recommender.recommendUserBasedItemFor(
             2,
-            Euklid(),
+            Euclid(),
             items,
             userRatings,
             weightedMean = false
@@ -104,7 +104,7 @@ class RecommenderTest : KoinTest {
         val predictedRatings =
             recommender.recommendUserBasedItemFor(
                 2,
-                Euklid(),
+                Euclid(),
                 items,
                 userRatings,
                 weightedMean = true
@@ -122,7 +122,7 @@ class RecommenderTest : KoinTest {
     fun assertFailOnMissingUserid() {
         val predictedRatings = recommender.recommendUserBasedItemFor(
             6,
-            Euklid(),
+            Euclid(),
             items,
             userRatings,
             weightedMean = true
@@ -134,7 +134,7 @@ class RecommenderTest : KoinTest {
     fun assertFailOnMissingUserid2() {
         val sim = recommender.getUserSimilaritiesOf(
             6,
-            Euklid(),
+            Euclid(),
             items,
             userRatings
         )
@@ -146,7 +146,7 @@ class RecommenderTest : KoinTest {
         val sim =
             recommender.getItemSimilaritiesOf(
                 "Earl of Sandwiches",
-                Euklid(),
+                Euclid(),
                 items,
                 userRatings
             )

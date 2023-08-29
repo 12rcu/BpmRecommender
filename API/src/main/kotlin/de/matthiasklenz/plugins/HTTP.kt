@@ -1,12 +1,13 @@
 package de.matthiasklenz.plugins
 
+import de.matthiasklenz.config.Config
 import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpMethod
 import io.ktor.server.application.Application
 import io.ktor.server.application.install
 import io.ktor.server.plugins.cors.routing.CORS
 
-fun Application.configureHTTP() {
+fun Application.configureHTTP(config: Config) {
     install(CORS) {
         allowMethod(HttpMethod.Options)
         allowMethod(HttpMethod.Get)
@@ -18,25 +19,10 @@ fun Application.configureHTTP() {
         allowHeader(HttpHeaders.ContentType)
         allowHeader(HttpHeaders.AccessControlAllowOrigin)
 
-        // axios requests
-        allowHeader(HttpHeaders.Authorization)
-        allowHeader(HttpHeaders.Connection)
-        allowHeader(HttpHeaders.AcceptLanguage)
-        allowHeader(HttpHeaders.Host)
-        allowHeader(HttpHeaders.Referrer)
-        allowHeader(HttpHeaders.UserAgent)
-        allowHeader(HttpHeaders.Accept)
-        allowHeader(HttpHeaders.AcceptEncoding)
-        allowHeader(HttpHeaders.Origin)
-        allowHeader(HttpHeaders.Cookie)
-        allowHeader(HttpHeaders.Upgrade)
-        allowHeader("DNT")
-        allowHeader("Sec-Fetch-Dest")
-        allowHeader("Sec-Fetch-Mode")
-        allowHeader("Sec-Fetch-Site")
-        allowHeader("Sec-Fetch-User")
-        allowHeader("Upgrade-Insecure-Requests")
-        allowCredentials = true
-        anyHost() // @TODO: Don't do this in production if possible. Try to limit it.
+        if (config.allowCORS) {
+            config.allowedCORS.forEach { hostname ->
+                allowHost(hostname, listOf("https"))
+            }
+        }
     }
 }

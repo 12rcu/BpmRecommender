@@ -6,5 +6,5 @@ databases:
     schema: api
     user: api
     password: 123abc
-auth:
-  googleSecret: 123abc
+allowCORS: false
+allowedCORS: []

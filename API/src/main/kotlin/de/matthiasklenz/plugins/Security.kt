@@ -47,7 +47,10 @@ suspend fun PipelineContext<Unit, ApplicationCall>.bpmnAuth(routeInfo: String, l
 }
 
 fun main() {
-    val config = ConfigLoader().loadConfig()!!  //for testing
+    val config = ConfigLoader().loadConfig().getOrElse {
+        println(it.message)
+        return
+    }
     val token = JwtConfig(
         config.token
     ).generateToken(JwtConfig.User("matthias", "admin"))

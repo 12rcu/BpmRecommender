@@ -10,17 +10,19 @@ class Pearson : SimilarityMeasure {
     ): Number {
         val correlationCoefficientA =
             CorrelationCoefficient
-                .calculate(dataA.map { it.value })
+                .calculate(dataA.values.toList())
         val correlationCoefficientB =
             CorrelationCoefficient
-                .calculate(dataB.map { it.value })
+                .calculate(dataB.values.toList())
 
         return (
             Cosine.basicCalc(
-                dataA.map { (key, value) -> key to value - correlationCoefficientA }
-                    .toMap(),
-                dataB.map { (key, value) -> key to value - correlationCoefficientB }
-                    .toMap(),
+                dataA.mapValues { (_, value) ->
+                    value - correlationCoefficientA
+                },
+                dataB.mapValues { (_, value) ->
+                    value - correlationCoefficientB
+                }.toMap(),
                 allItems
             ).toDouble() + 1
             ) / 2

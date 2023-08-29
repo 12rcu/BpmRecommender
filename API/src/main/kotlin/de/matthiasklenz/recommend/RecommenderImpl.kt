@@ -71,7 +71,8 @@ class RecommenderImpl : KoinComponent, Recommender {
             )
             return listOf()
         }
-        val targetUserRatings = ratings.find { it.userid == userid }!!
+        val targetUserRatings =
+            ratings.find { it.userid == userid }!!
 
         return ratings.filter { it.userid != userid }.map {
             Recommender.UserSimilarity(
@@ -120,5 +121,52 @@ class RecommenderImpl : KoinComponent, Recommender {
                         .toDouble() // how similar as a double
                 )
             }
+    }
+
+    override fun recommendItemBasedItemFor(
+        userid: Int,
+        similarityMeasure: SimilarityMeasure,
+        allItems: List<String>,
+        ratings: List<Recommender.UserRating>,
+        knn: Int,
+        weightedMean: Boolean,
+    ): Map<String, Double> {
+        // select items that are not rated
+        val ratedItems =
+            ratings.find { it.userid == userid }!!.ratings
+        val unratedItems = allItems.filterNot {
+            ratedItems.containsKey(it)
+        }
+        val recommendations = mutableMapOf<String, Double>()
+
+        unratedItems.forEach {
+            val neighbors = getItemSimilaritiesOf(
+                it,
+                similarityMeasure,
+                ratedItems.map { item -> item.key },
+                ratings
+            )
+            val select = Knn.calculate(neighbors, knn)
+
+            if (weightedMean) {
+                val data = select.map { i ->
+                    ratings
+                        .find { r -> r.userid == userid }!!
+                        .ratings[i.item]!! to i.similarity
+                }
+                recommendations[it] =
+                    Mean.itemBasedWeightedMean(data)
+            } else {
+                val data = select.map { i ->
+                    ratings
+                        .find { r -> r.userid == userid }!!
+                        .ratings[i.item]!!
+                }
+                recommendations[it] =
+                    Mean.itemMean(data)
+            }
+        }
+
+        return recommendations
     }
 }

@@ -3,7 +3,7 @@ package de.matthiasklenz.recommend.comparer
 import kotlin.math.pow
 import kotlin.math.sqrt
 
-class Euklid : SimilarityMeasure {
+class Euclid : SimilarityMeasure {
     override fun compare(
         dataA: Map<String, Int>,
         dataB: Map<String, Int>,

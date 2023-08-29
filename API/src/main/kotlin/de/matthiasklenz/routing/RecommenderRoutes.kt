@@ -4,7 +4,7 @@ import de.matthiasklenz.database.BpmDatabase
 import de.matthiasklenz.plugins.bpmnAuth
 import de.matthiasklenz.recommend.RecommenderImpl
 import de.matthiasklenz.recommend.comparer.Cosine
-import de.matthiasklenz.recommend.comparer.Euklid
+import de.matthiasklenz.recommend.comparer.Euclid
 import de.matthiasklenz.recommend.comparer.Pearson
 import de.matthiasklenz.recommend.comparer.SimilarityMeasure
 import io.ktor.server.application.Application
@@ -20,11 +20,12 @@ import org.koin.core.module.Module
 import org.ktorm.entity.map
 import org.slf4j.Logger
 
-class RecommenderRoutes(application: Application) :
-    KoinComponent {
+class RecommenderRoutes(
+    application: Application,
+) : KoinComponent {
     companion object {
         fun koinModule(): Module = org.koin.dsl.module {
-            single { Euklid() }
+            single { Euclid() }
             single { Cosine() }
             single { Pearson() }
 
@@ -32,7 +33,7 @@ class RecommenderRoutes(application: Application) :
         }
     }
 
-    private val euklid: Euklid by inject()
+    private val euclid: Euclid by inject()
     private val cosine: Cosine by inject()
     private val pearson: Pearson by inject()
 
@@ -184,7 +185,7 @@ class RecommenderRoutes(application: Application) :
                 )
             call.respond(similarities)
         }
-        get("/itemBased/recommendations/{itemId}") {
+        get("/itemBased/recommendations/{userid}") {
             val authenticated = bpmnAuth(
                 routeInfo = "/itemBased/recommendations",
                 logger
@@ -193,8 +194,8 @@ class RecommenderRoutes(application: Application) :
                 return@get
             }
 
-            val itemId: Int = call
-                .parameters["itemId"]
+            val userid: Int = call
+                .parameters["userid"]
                 ?.toIntOrNull()
                 ?: 0
 
@@ -203,12 +204,46 @@ class RecommenderRoutes(application: Application) :
                     call.request.queryParameters["SimilarityMeasure"]
                         ?: ""
                 )
+
+            val allRatings = database
+                .userDao
+                .getAllRatingsRecommender()
+
+            val allItems = database
+                .itemDao
+                .getItems()
+                .map { it.id.toString() }
+
+            val knn: Int = call
+                .request
+                .queryParameters["knn"]
+                ?.toIntOrNull()
+                ?: 2
+
+            val weightedMean = call
+                .request
+                .queryParameters["weightedMean"]
+                ?.toBooleanStrictOrNull()
+                ?: true
+
+            val recommendations =
+                recommender.recommendItemBasedItemFor(
+                    userid,
+                    similarityMeasure,
+                    allItems,
+                    allRatings,
+                    knn,
+                    weightedMean
+                )
+
+            call.respond(recommendations)
         }
     }
 
-    private fun simStringToObj(str: String) = when (str) {
-        "euklid" -> euklid
-        "cosine" -> cosine
-        else -> pearson // also functions as adjusted cosine
-    }
+    private fun simStringToObj(str: String) =
+        when (str.lowercase()) {
+            "euklid" -> euclid
+            "cosine" -> cosine
+            else -> pearson // also functions as adjusted cosine
+        }
 }

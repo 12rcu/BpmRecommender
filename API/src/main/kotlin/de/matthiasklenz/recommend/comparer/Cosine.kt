@@ -15,9 +15,18 @@ class Cosine : SimilarityMeasure {
             var sumBSquared = 0.0
 
             allItems.forEach {
-                sumATimesB += (dataA[it] ?: 0).toDouble() * (dataB[it] ?: 0).toDouble()
-                sumASquared += (dataA[it] ?: 0).toDouble().pow(2)
-                sumBSquared += (dataB[it] ?: 0).toDouble().pow(2)
+                sumATimesB +=
+                    (dataA[it] ?: 0)
+                        .toDouble()
+                        .times((dataB[it] ?: 0).toDouble())
+                sumASquared +=
+                    (dataA[it] ?: 0)
+                        .toDouble()
+                        .pow(2)
+                sumBSquared +=
+                    (dataB[it] ?: 0)
+                        .toDouble()
+                        .pow(2)
             }
 
             return (sumATimesB / (sqrt(sumASquared * sumBSquared)))
