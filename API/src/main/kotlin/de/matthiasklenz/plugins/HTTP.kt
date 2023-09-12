@@ -23,6 +23,8 @@ fun Application.configureHTTP(config: Config) {
             config.allowedCORS.forEach { hostname ->
                 allowHost(hostname, listOf("https"))
             }
+            if (config.allowedCORS.isEmpty())
+                anyHost()
         }
     }
 }

@@ -9,13 +9,6 @@ VALUES ('BPMN 2.0', 'graphical notation based on flowcharting techniques'),
        ('Petri Net', 'used for describing distributed systems and has a mathematical theory'),
        ('UML Act.', 'documents activity and control flow as a float chart');
 
-INSERT INTO bpm_item_categories (name, description, value_range)
-VALUES ('mental_load', 'The mental load on a user when using the BPMN, types in {undefined, easy, hard}', 2),
-       ('enterprise', 'Category that indicates if the BPMN should be used for enterprise projects', 1),
-       ('use_case', 'Indicate if the Notation has support for use_case', 1),
-       ('activities', 'Indicates if the Notation has support for activities', 1),
-       ('color', 'Indicates if the Notation {forbid, allow, require} colors', 2);
-
 INSERT INTO bpm_user (name)
 VALUES ('Peter'),
        ('Hans'),
@@ -34,8 +27,6 @@ VALUES (1, 1, 3),
        (7, 1, 3),
        (8, 2, 3),
        (1, 2, 2),
-#      (2, 2, 1),
-#      (3, 2, 5),
        (4, 2, 3),
        (5, 2, 4),
        (6, 2, 2),

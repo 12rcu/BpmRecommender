@@ -43,6 +43,8 @@ class UserRoutes(application: Application) : KoinComponent {
                     getRatings()
                     createUser()
                     getUser()
+                    editUser()
+                    delUser()
                     route("/rating") {
                         addRating()
                     }
@@ -78,7 +80,6 @@ class UserRoutes(application: Application) : KoinComponent {
             if (!authenticated) {
                 return@get
             }
-
 
             val data =
                 database.userDao.getAllUsers().map { user ->
@@ -119,6 +120,25 @@ class UserRoutes(application: Application) : KoinComponent {
             } else {
                 call.respond(HttpStatusCode.OK)
             }
+        }
+    }
+
+    private fun Route.editUser() {
+        post {
+            val authenticated = bpmnAuth(
+                routeInfo = "/user/",
+                logger
+            )
+            if (!authenticated) {
+                return@post
+            }
+            val data = call.receive<UserData>()
+
+            database.userDao.editUser(
+                data.userid ?: 0,
+                data.username,
+                data.info
+            )
         }
     }
 

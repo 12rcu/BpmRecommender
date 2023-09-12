@@ -40,7 +40,9 @@ fun Application.module() {
     Server(this, appModules)
 }
 
-private fun NettyApplicationEngine.Configuration.loadConfiguration(config: ApplicationConfig) {
+private fun NettyApplicationEngine.Configuration.loadConfiguration(
+    config: ApplicationConfig,
+) {
     val deploymentConfig = config.config("ktor.deployment")
     loadCommonConfiguration(deploymentConfig)
     deploymentConfig.propertyOrNull(

@@ -33,7 +33,11 @@ class BpmDatabase : KoinComponent {
         database = Database.connect(
             "%s?%s".format(
                 jdbcUrl,
-                jdbcParameters.toList().joinToString("&") { (key, value) -> "$key=$value" }
+                jdbcParameters
+                    .toList()
+                    .joinToString("&") { (key, value) ->
+                        "$key=$value"
+                    }
             )
         )
 

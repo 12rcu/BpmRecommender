@@ -20,28 +20,34 @@ fun Application.configureSecurity(jwtConfig: JwtConfig) {
     }
 }
 
-suspend fun PipelineContext<Unit, ApplicationCall>.bpmnAuth(routeInfo: String, logger: Logger): Boolean {
+suspend fun PipelineContext<Unit, ApplicationCall>.bpmnAuth(
+    routeInfo: String,
+    logger: Logger,
+): Boolean {
     val principal = call.principal<JwtConfig.User>()
-    return if (principal?.role == "admin") {
-        logger.info(
-            "Successfully authenticated '${principal.userinfo}' to access '$routeInfo'!"
-        )
+    val hasAccess: Boolean = (principal?.role == "admin")
+    val noToken: Boolean = principal == null
+
+    val success = "Successfully authenticated " +
+        "'${principal?.userinfo}' to access '$routeInfo'!"
+    val denied = "Denied access for '$principal' to access " +
+        "'$routeInfo'!"
+
+    val unAuthMsg = "Please reauthenticate!"
+    val forbidden =
+        "You don't have the correct role to access " +
+            "this Route!"
+
+    return if (hasAccess) {
+        logger.info(success)
         true
+    } else if (noToken) {
+        logger.warn(denied)
+        call.respond(HttpStatusCode.Unauthorized, unAuthMsg)
+        false
     } else {
-        if (principal == null) {
-            call.respond(
-                HttpStatusCode.Unauthorized,
-                "Please reauthenticate!"
-            )
-        } else {
-            call.respond(
-                HttpStatusCode.Forbidden,
-                "You don't have the correct role to access this Route!"
-            )
-        }
-        logger.warn(
-            "Denied access for '$principal' to access '$routeInfo'!"
-        )
+        logger.warn(denied)
+        call.respond(HttpStatusCode.Forbidden, forbidden)
         false
     }
 }

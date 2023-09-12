@@ -40,6 +40,14 @@ class UserDao(private val database: Database) : KoinComponent {
         }
     }
 
+    fun editUser(id: Int, name: String, info: String?) {
+        database.update(UserDbTable) {
+            set(it.name, name)
+            set(it.info, info)
+            where { it.id eq id }
+        }
+    }
+
     /**
      * adds or updates a user rating for an item
      * @param itemId the item the is rated

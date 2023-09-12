@@ -51,9 +51,10 @@ class RecommenderImpl : KoinComponent, Recommender {
             if (weightedMean) {
                 returnRecommendations[item] =
                     Mean.weightedMean(nearestNeighbors, item)
+                        .nanToZero()
             } else {
                 returnRecommendations[item] =
-                    Mean.mean(nearestNeighbors, item)
+                    Mean.mean(nearestNeighbors, item).nanToZero()
             }
         }
         return returnRecommendations
@@ -82,8 +83,8 @@ class RecommenderImpl : KoinComponent, Recommender {
                     targetUserRatings.ratings,
                     it.ratings,
                     allItems
-                )
-                    .toDouble() // how similar as a double
+                ).toDouble()
+                    .nanToZero() // how similar as a double
             )
         }
     }
@@ -118,7 +119,8 @@ class RecommenderImpl : KoinComponent, Recommender {
                         dataB,
                         ratings.map { rating -> rating.userid.toString() }
                     )
-                        .toDouble() // how similar as a double
+                        .toDouble()
+                        .nanToZero() // how similar as a double
                 )
             }
     }
@@ -143,10 +145,15 @@ class RecommenderImpl : KoinComponent, Recommender {
             val neighbors = getItemSimilaritiesOf(
                 it,
                 similarityMeasure,
-                ratedItems.map { item -> item.key },
+                allItems,
                 ratings
             )
-            val select = Knn.calculate(neighbors, knn)
+
+            val ratedNeighbors = neighbors.filter { r ->
+                ratedItems.containsKey(r.item)
+            }
+
+            val select = Knn.calculate(ratedNeighbors, knn)
 
             if (weightedMean) {
                 val data = select.map { i ->
@@ -155,7 +162,7 @@ class RecommenderImpl : KoinComponent, Recommender {
                         .ratings[i.item]!! to i.similarity
                 }
                 recommendations[it] =
-                    Mean.itemBasedWeightedMean(data)
+                    Mean.itemBasedWeightedMean(data).nanToZero()
             } else {
                 val data = select.map { i ->
                     ratings
@@ -163,10 +170,18 @@ class RecommenderImpl : KoinComponent, Recommender {
                         .ratings[i.item]!!
                 }
                 recommendations[it] =
-                    Mean.itemMean(data)
+                    Mean.itemMean(data).nanToZero()
             }
         }
 
         return recommendations
+    }
+
+    private fun Double.nanToZero(): Double {
+        return if (this.isNaN()) {
+            0.0
+        } else {
+            this
+        }
     }
 }
