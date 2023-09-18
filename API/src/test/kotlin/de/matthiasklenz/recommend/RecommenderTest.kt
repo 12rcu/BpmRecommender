@@ -1,6 +1,8 @@
 package de.matthiasklenz.recommend
 
 import de.matthiasklenz.recommend.comparer.Euclid
+import org.koin.core.context.startKoin
+import org.koin.dsl.module
 import org.koin.test.KoinTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -87,13 +89,14 @@ class RecommenderTest : KoinTest {
 
     @Test
     fun recommendedItemsTest() {
-        val predictedRatings = recommender.recommendUserBasedItemFor(
-            2,
-            Euclid(),
-            items,
-            userRatings,
-            weightedMean = false
-        )
+        val predictedRatings =
+            recommender.recommendUserBasedItemFor(
+                2,
+                Euclid(),
+                items,
+                userRatings,
+                weightedMean = false
+            )
         assertEquals(predictedRatings.size, 2)
         assertEquals(2.0, predictedRatings["Pasta und Pizza"])
         assertEquals(1.5, predictedRatings["Grecos"])
@@ -120,13 +123,19 @@ class RecommenderTest : KoinTest {
 
     @Test
     fun assertFailOnMissingUserid() {
-        val predictedRatings = recommender.recommendUserBasedItemFor(
-            6,
-            Euclid(),
-            items,
-            userRatings,
-            weightedMean = true
-        )
+        startKoin {
+            modules(module {
+                single { org.slf4j.LoggerFactory.getLogger("test") }
+            })
+        }
+        val predictedRatings =
+            recommender.recommendUserBasedItemFor(
+                6,
+                Euclid(),
+                items,
+                userRatings,
+                weightedMean = true
+            )
         assertEquals(0, predictedRatings.size)
     }
 
